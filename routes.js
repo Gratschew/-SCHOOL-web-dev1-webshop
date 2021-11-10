@@ -1,7 +1,7 @@
 const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
-const { emailInUse, getAllUsers, saveNewUser, validateUser } = require('./utils/users');
+const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole } = require('./utils/users');
 
 /**
  * Known API routes and their allowed methods
@@ -95,9 +95,12 @@ const handleRequest = async(request, response) => {
     // First call getAllUsers() function to fetch the list of users.
     // Then you can use the sendJson(response, payload, code = 200) from 
     // ./utils/responseUtils.js to send the response in JSON format.
-    //
+    let userlist = getAllUsers();
+    return responseUtils.sendJson(response, userlist, code = 200);
     // TODO: 8.5 Add authentication (only allowed to users with role "admin")
-    return await getAllUsers(response);
+    //return await getAllUsers(response);
+    
+
 
   }
 
@@ -111,7 +114,26 @@ const handleRequest = async(request, response) => {
     // TODO: 8.4 Implement registration
     // You can use parseBodyJson(request) method from utils/requestUtils.js to parse request body.
     // 
-    throw new Error('Not Implemented');
+    //throw new Error('Not Implemented');
+    const requestBody = await parseBodyJson(request);
+    const errors = validateUser(requestBody);
+    
+    if (errors.length !== 0) {
+      for (const err in errors) {
+        return responseUtils.badRequest(response, err);
+      }
+    }
+
+    else if (emailInUse(requestBody.email)){
+      return responseUtils.badRequest(response, 'Email already in use');
+    }
+    
+    else {
+      let newUser = saveNewUser(requestBody);
+      newUser = updateUserRole(newUser._id, 'customer');
+      return responseUtils.createdResource(response, newUser);
+    }
+  
   }
 };
 
