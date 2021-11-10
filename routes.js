@@ -119,9 +119,7 @@ const handleRequest = async(request, response) => {
     const errors = validateUser(requestBody);
     
     if (errors.length !== 0) {
-      for (const err in errors) {
-        return responseUtils.badRequest(response, err);
-      }
+      return responseUtils.badRequest(response, errors);
     }
 
     else if (emailInUse(requestBody.email)){
