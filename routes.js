@@ -1,8 +1,8 @@
 const responseUtils = require('./utils/responseUtils');
-const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
+const { acceptsJson, isJson, parseBodyJson, getCredentials } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
 const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole } = require('./utils/users');
-
+const { getCurrentUser } = require('./auth/auth')
 /**
  * Known API routes and their allowed methods
  *
@@ -95,14 +95,33 @@ const handleRequest = async(request, response) => {
     // First call getAllUsers() function to fetch the list of users.
     // Then you can use the sendJson(response, payload, code = 200) from 
     // ./utils/responseUtils.js to send the response in JSON format.
-    let userlist = getAllUsers();
-    return responseUtils.sendJson(response, userlist, code = 200);
+   
+
     // TODO: 8.5 Add authentication (only allowed to users with role "admin")
-    //return await getAllUsers(response);
+    if(getCredentials(request) === null || await getCurrentUser(request) === null 
+    || await getCurrentUser(request) === undefined) {
+
+      responseUtils.basicAuthChallenge(response);
+    }
+    else {
+
+      const userList = getAllUsers();
+      const currUser = await getCurrentUser(request);
+      if (currUser.role === 'customer') {
+        responseUtils.forbidden(response);
+      }
+      else {
+        responseUtils.sendJson(response, userList, 200);
+      }
+
+    } 
+
+  }
+
     
 
 
-  }
+  
 
   // register new user
   if (filePath === '/api/register' && method.toUpperCase() === 'POST') {
