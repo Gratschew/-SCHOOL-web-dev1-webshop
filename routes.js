@@ -2,7 +2,7 @@ const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson, getCredentials } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
 const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole, getUserById, getUser, deleteUserById } = require('./utils/users');
-const { getCurrentUser } = require('./auth/auth')
+const { getCurrentUser } = require('./auth/auth');
 /**
  * Known API routes and their allowed methods
  *
@@ -71,9 +71,9 @@ const handleRequest = async(request, response) => {
     // TODO: 8.6 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
     // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
     //throw new Error('Not Implemented');
-    let splittedFilepath = filePath.split('/');
-    let wantedId = splittedFilepath[splittedFilepath.length - 1];
-    let wantedUser = getUserById(wantedId);
+    const splittedFilepath = filePath.split('/');
+    const wantedId = splittedFilepath[splittedFilepath.length - 1];
+    const wantedUser = getUserById(wantedId);
     const creds = getCredentials(request);
 
     if (wantedUser === undefined) {
@@ -98,7 +98,7 @@ const handleRequest = async(request, response) => {
             return responseUtils.badRequest(response, 'Role is missing');
           }
           else if (requestBody.role === 'customer' || requestBody.role === 'admin') {
-            let updatedUser = updateUserRole(wantedId, requestBody.role);
+            const updatedUser = updateUserRole(wantedId, requestBody.role);
             return responseUtils.sendJson(response, updatedUser);
           }
           else {

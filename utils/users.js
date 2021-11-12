@@ -98,7 +98,7 @@ const deleteUserById = userId => {
   // Hint: Array's findIndex() and splice() methods could be handy here.
   const user = data.users.find(user => user._id === userId);
 
-  if(user != undefined){
+  if(user !== undefined){
     const index = data.users.findIndex(toRemove => toRemove._id === userId);
     data.users.splice(index, 1);
   }
@@ -159,7 +159,7 @@ const updateUserRole = (userId, role) => {
   }
   const user = data.users.find(user => user._id === userId);
 
-  if (user != undefined){
+  if (user !== undefined){
   user.role = role;
   }
 

@@ -1,5 +1,5 @@
 const { getUser } = require ("../utils/users");
-const { getCredentials } = require('../utils/requestUtils')
+const { getCredentials } = require('../utils/requestUtils');
 /**
  * Get current user based on the request headers
  *
@@ -14,7 +14,7 @@ const getCurrentUser = async request => {
   // logged in user
 
   const currentCreds = getCredentials(request);
-  if(currentCreds != null){
+  if(currentCreds !== null){
     return getUser(currentCreds[0], currentCreds[1]);
   }
 
