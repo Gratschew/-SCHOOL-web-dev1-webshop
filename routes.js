@@ -1,7 +1,7 @@
 const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson, getCredentials } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
-const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole } = require('./utils/users');
+const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole, getUserById, getUser, deleteUserById } = require('./utils/users');
 const { getCurrentUser } = require('./auth/auth')
 /**
  * Known API routes and their allowed methods
@@ -70,7 +70,48 @@ const handleRequest = async(request, response) => {
   if (matchUserId(filePath)) {
     // TODO: 8.6 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
     // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-    throw new Error('Not Implemented');
+    //throw new Error('Not Implemented');
+    let splittedFilepath = filePath.split('/');
+    let wantedId = splittedFilepath[splittedFilepath.length - 1];
+    let wantedUser = getUserById(wantedId);
+    const creds = getCredentials(request);
+
+    if (wantedUser === undefined) {
+      return responseUtils.notFound(response);
+    }
+    if (getCredentials(request) === null || getUser(creds[0], creds[1]) === undefined) {
+      return responseUtils.basicAuthChallenge(response);
+    }
+    else {
+      if (getUser(creds[0], creds[1]).role === 'customer') {
+        return responseUtils.forbidden(response);
+      }
+      else if (getUser(creds[0], creds[1]).role === 'admin') {
+        
+        if (method.toUpperCase() === 'GET') {
+          return responseUtils.sendJson(response, wantedUser);
+        }
+        
+        else if (method.toUpperCase() === 'PUT') {
+          const requestBody = await parseBodyJson(request);
+          if (requestBody.role === '') {
+            return responseUtils.badRequest(response, 'Role is missing');
+          }
+          else if (requestBody.role === 'customer' || requestBody.role === 'admin') {
+            let updatedUser = updateUserRole(wantedId, requestBody.role);
+            return responseUtils.sendJson(response, updatedUser);
+          }
+          else {
+            return responseUtils.badRequest(response, 'Role is not valid');
+          }
+        }
+        
+        else if (method.toUpperCase() === 'DELETE') {
+          const deletedUser = deleteUserById(wantedId);
+          return responseUtils.sendJson(response, deletedUser);
+        }
+      }
+    }
   }
 
   // Default to 404 Not Found if unknown url
