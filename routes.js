@@ -137,10 +137,10 @@ const handleRequest = async(request, response) => {
     // Then you can use the sendJson(response, payload, code = 200) from 
     // ./utils/responseUtils.js to send the response in JSON format.
    
-
+    
     // TODO: 8.5 Add authentication (only allowed to users with role "admin")
     if(getCredentials(request) === null || await getCurrentUser(request) === null 
-    || await getCurrentUser(request) === undefined) {
+    /*|| await getCurrentUser(request) === undefined*/) {
 
       responseUtils.basicAuthChallenge(response);
     }

@@ -1,3 +1,5 @@
+const { getUser, emailInUse } = require("./users");
+
 /**
  * Decode, parse and return user credentials (username and password)
  * from the Authorization header.
@@ -15,13 +17,24 @@ const getCredentials = request => {
     const base64 = request.headers.authorization.split(' ')[1];
     const buff = Buffer.from(base64, 'base64');
     const str = buff.toString('utf-8');
-    const creds = str.split(":");
-    return creds;
-    
+
+    if(str.split(":").length > 1){
+      const creds = str.split(":");
+
+      if (getUser(creds[0], creds[1]) === undefined){
+        return null;
+      }
+      return creds;
+    }
+    else{
+      return null;
+    }
    }
+   
    else{
      return null;
    }
+   
 };
 
 /**
