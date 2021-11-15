@@ -139,8 +139,7 @@ const handleRequest = async(request, response) => {
    
     
     // TODO: 8.5 Add authentication (only allowed to users with role "admin")
-    if(getCredentials(request) === null || await getCurrentUser(request) === null 
-    /*|| await getCurrentUser(request) === undefined*/) {
+    if(getCredentials(request) === null || await getCurrentUser(request) === null ) {
 
       responseUtils.basicAuthChallenge(response);
     }
