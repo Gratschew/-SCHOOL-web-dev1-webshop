@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
-const dburl = process.env.DBURL;
+
+//for some reason the commented dburl failed tests in plussa but worked locally
+//so dburl is now hard coded into the program
+//const dburl = process.env.DBURL;
+const dburl_const = 'mongodb://localhost:27017/WebShopDb'
 
 /**
  * Get database connect URL.
@@ -16,7 +20,7 @@ const getDbUrl = () => {
     return process.env.DBURL;
   }
   else{
-    return dburl;
+    return dburl_const;
   };
 };
 
