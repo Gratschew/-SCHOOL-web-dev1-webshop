@@ -10,7 +10,8 @@ const mongoose = require('mongoose');
  */
 const getDbUrl = () => {
   // TODO: 9.4 Implement this
-  throw new Error('Implement this');
+  require('dotenv').config();
+  return process.env.DBURL;
 };
 
 const connectDB = () => {
