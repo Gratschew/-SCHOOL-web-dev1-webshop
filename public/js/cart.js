@@ -91,9 +91,9 @@ const placeOrder = async() => {
     templateClone.querySelector("p.product-amount").innerText = `${getProductCountFromCart(_id)}x`;
     
     let buttons = templateClone.querySelectorAll(".cart-minus-plus-button");
-    buttons[0].id = `plus-${_id} `;
+    buttons[0].id = `plus-${_id}`;
     buttons[0].addEventListener('click', () => addToCart(_id));
-    buttons[1].id = `minus-${_id} `;
+    buttons[1].id = `minus-${_id}`;
     buttons[1].addEventListener('click', () => decreaseCount(_id));
 
 
