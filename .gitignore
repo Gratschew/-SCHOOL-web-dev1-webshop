@@ -77,7 +77,8 @@ jspm_packages/
 *.tgz
 
 # dotenv environment variables file
-.env
+#.env commented out for 9.4
+#.env
 
 # VS Code
 .vscode/*

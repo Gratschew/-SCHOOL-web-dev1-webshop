@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
+const dburl = process.env.DBURL;
 
 /**
  * Get database connect URL.
@@ -10,7 +12,12 @@ const mongoose = require('mongoose');
  */
 const getDbUrl = () => {
   // TODO: 9.4 Implement this
-  throw new Error('Implement this');
+  if(process.env.DBURL !== undefined){
+    return process.env.DBURL;
+  }
+  else{
+    return dburl;
+  };
 };
 
 const connectDB = () => {
