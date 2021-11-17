@@ -17,13 +17,11 @@ const userForm = (event) => {
         userInfo['name'] = document.getElementById('name').value;
         userInfo['email'] = document.getElementById('email').value;
         userInfo['password'] = document.getElementById('password').value;
-        const result2 = postOrPutJSON('http://localhost:3000/api/register', 'POST', userInfo);
-        result2.then(
+        const result = postOrPutJSON('/api/register', 'POST', userInfo);
+        result.then(
             result => registerationSuccess(),
             error => registeratrionFfailure()
         )
-        //if(result.)
-
     }
     else {
         createNotification('Passwords do not match! Try again.', 'notifications-container', false)
