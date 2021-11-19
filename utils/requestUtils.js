@@ -1,4 +1,5 @@
-const { getUser, emailInUse } = require("./users");
+//const { getUser, emailInUse } = require("./users");
+//const User = require('../models/user');
 
 /**
  * Decode, parse and return user credentials (username and password)
@@ -18,12 +19,8 @@ const getCredentials = request => {
     const buff = Buffer.from(base64, 'base64');
     const str = buff.toString('utf-8');
 
-    if(str.split(":").length > 1){
+    if(str.split(":").length === 2){
       const creds = str.split(":");
-
-      if (getUser(creds[0], creds[1]) === undefined){
-        return null;
-      }
       return creds;
     }
     else{

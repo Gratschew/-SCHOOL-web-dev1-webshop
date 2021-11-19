@@ -1,9 +1,9 @@
 const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson, getCredentials } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
-const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole, getUserById, getUser, deleteUserById } = require('./utils/users');
 const { getCurrentUser } = require('./auth/auth');
 const fileProducts = require('./products.json').map(product => ({...product }));
+const User = require("./models/user");
 /**
  * Known API routes and their allowed methods
  *
@@ -75,20 +75,20 @@ const handleRequest = async(request, response) => {
     //throw new Error('Not Implemented');
     const splittedFilepath = filePath.split('/');
     const wantedId = splittedFilepath[splittedFilepath.length - 1];
-    const wantedUser = getUserById(wantedId);
-    const creds = getCredentials(request);
+    const wantedUser = await User.findById(wantedId).exec();
+    const currUser = await getCurrentUser(request);
 
-    if (wantedUser === undefined) {
+    if (!wantedUser) {
       return responseUtils.notFound(response);
     }
-    if (getCredentials(request) === null || getUser(creds[0], creds[1]) === undefined) {
+    if (!currUser) {
       return responseUtils.basicAuthChallenge(response);
     }
     else {
-      if (getUser(creds[0], creds[1]).role === 'customer') {
+      if (currUser.role === 'customer') {
         return responseUtils.forbidden(response);
       }
-      else if (getUser(creds[0], creds[1]).role === 'admin') {
+      else if (currUser.role === 'admin') {
         
         if (method.toUpperCase() === 'GET') {
           return responseUtils.sendJson(response, wantedUser);
@@ -100,16 +100,18 @@ const handleRequest = async(request, response) => {
             return responseUtils.badRequest(response, 'Role is missing');
           }
           else if (requestBody.role === 'customer' || requestBody.role === 'admin') {
-            const updatedUser = updateUserRole(wantedId, requestBody.role);
-            return responseUtils.sendJson(response, updatedUser);
+            wantedUser.role = requestBody.role;
+            await wantedUser.save();
+            return responseUtils.sendJson(response, wantedUser);
           }
           else {
             return responseUtils.badRequest(response, 'Role is not valid');
           }
         }
         
-        else if (method.toUpperCase() === 'DELETE') {
-          const deletedUser = deleteUserById(wantedId);
+        else if (method.toUpperCase() === 'DELETE') { 
+          const deletedUser = wantedUser;
+          await User.deleteOne({ _id: wantedId });
           return responseUtils.sendJson(response, deletedUser);
         }
       }
@@ -141,14 +143,14 @@ const handleRequest = async(request, response) => {
    
     
     // TODO: 8.5 Add authentication (only allowed to users with role "admin")
-    if(getCredentials(request) === null || await getCurrentUser(request) === null ) {
+    const currUser = await getCurrentUser(request);
+    if(!currUser) {
 
       responseUtils.basicAuthChallenge(response);
     }
     else {
 
-      const userList = getAllUsers();
-      const currUser = await getCurrentUser(request);
+      const userList = await User.find({});
       if (currUser.role === 'customer') {
         responseUtils.forbidden(response);
       }
@@ -175,33 +177,37 @@ const handleRequest = async(request, response) => {
     // TODO: 8.4 Implement registration
     // You can use parseBodyJson(request) method from utils/requestUtils.js to parse request body.
     // 
-    //throw new Error('Not Implemented');
     const requestBody = await parseBodyJson(request);
-    const errors = validateUser(requestBody);
+    const allowedRoles = ['customer', 'admin'];
+    const errors = [];
+    if (!requestBody.name) errors.push('Missing name');
+    if (!requestBody.email) errors.push('Missing email');
+    if (!requestBody.password) errors.push('Missing password');
+    if (requestBody.role && !allowedRoles.includes(requestBody.role)) errors.push('Unknown role');
     
     if (errors.length !== 0) {
       return responseUtils.badRequest(response, errors);
     }
 
-    else if (emailInUse(requestBody.email)){
+    else if (await User.findOne({ email: requestBody.email }).exec() !== null){
       return responseUtils.badRequest(response, 'Email already in use');
     }
-    
     else {
-      let newUser = saveNewUser(requestBody);
-      newUser = updateUserRole(newUser._id, 'customer');
+      const newUser = new User(requestBody);
+      newUser.role = 'customer';
+      newUser.save();
       return responseUtils.createdResource(response, newUser);
     }
   
   }
 
   if (filePath === '/api/products' && method.toUpperCase() === 'GET') {
-    const creds = getCredentials(request);
-    if(creds === null || await getCurrentUser(request) === null ) {
+    const currUser = await getCurrentUser(request);
+    if(!currUser ) {
       responseUtils.basicAuthChallenge(response);
     }
     else {
-      if (getUser(creds[0], creds[1]).role === 'customer' || getUser(creds[0], creds[1]).role === 'admin') {
+      if (currUser.role === 'customer' || currUser.role === 'admin') {
         return responseUtils.sendJson(response, fileProducts);
       }
     }

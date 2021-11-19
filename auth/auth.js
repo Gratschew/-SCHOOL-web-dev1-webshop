@@ -22,9 +22,9 @@ const getCurrentUser = async request => {
    // find one user with the email from credentials
   const emailUser = await User.findOne({ email: currentCreds[0] }).exec();
   if(emailUser !== null){
-    if (emailUser.checkPassword(currentCreds[1])) {
+    if (await emailUser.checkPassword(currentCreds[1])) {
       // password is correct
-      return User;
+      return emailUser;
     } else {
       // password incorrect
       return null;
