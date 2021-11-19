@@ -53,7 +53,16 @@ const postOrPutJSON = async(url, method, data = {}) => {
     body: JSON.stringify(data)
   });
 
-  if (!response.ok) throw new Error('Network response was not OK');
+     
+  // corresponding error message for the reason of a bad response          
+  if (!response.ok){ 
+    await response.json().then(data => {
+      const errorMsg = data.error;
+      throw new Error(errorMsg);
+    });
+    
+  }
+
   if (response.status < 200 || response.status > 400) {
     throw new Error(`Received "${response.status} ${response.statusText}"`);
   }

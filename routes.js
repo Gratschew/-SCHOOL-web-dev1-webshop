@@ -183,6 +183,7 @@ const handleRequest = async(request, response) => {
     if (!requestBody.name) errors.push('Missing name');
     if (!requestBody.email) errors.push('Missing email');
     if (!requestBody.password) errors.push('Missing password');
+    else if (requestBody.password.length < 10) errors.push("Password must be at least 10 characters");
     if (requestBody.role && !allowedRoles.includes(requestBody.role)) errors.push('Unknown role');
     
     if (errors.length !== 0) {

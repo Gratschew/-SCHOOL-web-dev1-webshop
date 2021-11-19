@@ -8,7 +8,7 @@
  *       - Use postOrPutJSON() function from utils.js to send your data back to server
  **/
 
-
+const constErrorMsg = 'Registeration unsuccessful';
 
 
 const userForm = (event) => {
@@ -18,10 +18,11 @@ const userForm = (event) => {
         userInfo['email'] = document.getElementById('email').value;
         userInfo['password'] = document.getElementById('password').value;
         const result = postOrPutJSON('/api/register', 'POST', userInfo);
-        result.then(
-            result => registerationSuccess(),
-            error => registeratrionFfailure()
-        )
+        
+        result.
+        then( result => registerationSuccess())
+        .catch(error => registerationFailure(error))
+        
     }
     else {
         createNotification('Passwords do not match! Try again.', 'notifications-container', false)
@@ -39,8 +40,15 @@ const registerationSuccess = () => {
     document.getElementById("register-form").reset();
 }
 
-const registeratrionFfailure = () => {
-createNotification('Registeration unsuccessful, email could be already registered', 'notifications-container', false)
+const registerationFailure = (errorMessage) => {
+msg = errorMessage.message;
+msgLength = errorMessage.message.length
+if(msgLength > 1){
+createNotification(constErrorMsg + ' ' + msg, 'notifications-container', false)
+}
+else{
+createNotification(constErrorMsg, 'notifications-container', false)
+}
 }
 
 const submitForm = document.getElementById("register-form");
