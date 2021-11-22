@@ -76,7 +76,6 @@ const handleRequest = async(request, response) => {
     const splittedFilepath = filePath.split('/');
     const wantedId = splittedFilepath[splittedFilepath.length - 1];
 
-    //const wantedUser = await User.findById(wantedId).exec();
     const wantedUser = await fetchUser(wantedId);
     const currUser = await getCurrentUser(request);
 
@@ -87,10 +86,6 @@ const handleRequest = async(request, response) => {
       return responseUtils.basicAuthChallenge(response);
     }
     else
-      if (currUser.role === 'customer') {
-        return responseUtils.forbidden(response);
-      }
-      else if (currUser.role === 'admin'){
         
         if (method.toUpperCase() === 'GET') {
           await viewUser(response, wantedId, currUser);
@@ -104,7 +99,6 @@ const handleRequest = async(request, response) => {
         else if (method.toUpperCase() === 'DELETE') { 
           await deleteUser(response, wantedId, currUser)
         }
-      }
   }
 
   // Default to 404 Not Found if unknown url
@@ -133,15 +127,20 @@ const handleRequest = async(request, response) => {
     
     // TODO: 8.5 Add authentication (only allowed to users with role "admin")
 
-
-    await getAllUsers(response, request);
-
-  }
-
-    
-
-
+    const currUser = await getCurrentUser(request);
+    if(!currUser) {
+      responseUtils.basicAuthChallenge(response);
+    }
+    else {
   
+      if (currUser.role === 'customer') {
+        responseUtils.forbidden(response);
+      }
+      else {
+        await getAllUsers(response, request);
+      }
+    } 
+  }
 
   // register new user
   if (filePath === '/api/register' && method.toUpperCase() === 'POST') {
@@ -152,14 +151,23 @@ const handleRequest = async(request, response) => {
 
     // TODO: 8.4 Implement registration
     // You can use parseBodyJson(request) method from utils/requestUtils.js to parse request body.
-    // 
+
     const requestBody = await parseBodyJson(request);
     await registerUser(response, requestBody); 
   }
 
   if (filePath === '/api/products' && method.toUpperCase() === 'GET') {
-    await getAllProducts(response, request);
+    const currUser = await getCurrentUser(request);
+  if(!currUser ) {
+    responseUtils.basicAuthChallenge(response);
   }
+  else {
+    if (currUser.role === 'customer' || currUser.role === 'admin') {
+      await getAllProducts(response);
+    }
+  }
+
+  } 
 };
 
 module.exports = { handleRequest };

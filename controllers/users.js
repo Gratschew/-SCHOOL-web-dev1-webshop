@@ -1,4 +1,3 @@
-const { getCurrentUser } = require('../auth/auth');
 const responseUtils = require('../utils/responseUtils');
 const User = require("../models/user");
 
@@ -6,26 +5,17 @@ const User = require("../models/user");
  * Send all users as JSON
  *
  * @param {http.ServerResponse} response
- * @aram request
+ * 
  */
-const getAllUsers = async(response, request) => {
+const getAllUsers = async(response) => {
   // TODO: 10.2 Implement this
-  const currUser = await getCurrentUser(request);
-  if(!currUser) {
 
-    responseUtils.basicAuthChallenge(response);
-  }
-  else {
 
-    const userList = await User.find({});
-    if (currUser.role === 'customer') {
-      responseUtils.forbidden(response);
-    }
-    else {
-      responseUtils.sendJson(response, userList, 200);
-    }
+  const userList = await User.find({});
+  responseUtils.sendJson(response, userList, 200);
+    
 
-  } 
+  
 };
 
 /**
@@ -42,7 +32,7 @@ const deleteUser = async(response, userId, currentUser) => {
   if (!wantedUser) {
     responseUtils.notFound(response);
   }
-  if (!currentUser) {
+  else if (!currentUser) {
     responseUtils.basicAuthChallenge(response);
   }
   else {
@@ -50,8 +40,8 @@ const deleteUser = async(response, userId, currentUser) => {
       return responseUtils.forbidden(response);
     }
     else if (currentUser.role === 'admin') {
-      if(currentUser.email === wantedUser.email){
-        responseUtils.badRequest(response);
+      if(await currentUser._id.toString() === userId){
+        responseUtils.sendJson(response, {wantedUser, error: 'Deleting own data is not allowed'}, 400)
       }
       else{
       const deletedUser = wantedUser;
@@ -71,22 +61,27 @@ const deleteUser = async(response, userId, currentUser) => {
 const updateUser = async(response, userId, currentUser, userData) => {
   // TODO: 10.2 Implement this
   const wantedUser = await User.findById(userId).exec();
-  
-      if (userData.role === '') {
+  if(await User.exists({ _id: userId })){
+  if (userData.role === '') {
         responseUtils.badRequest(response, 'Role is missing');
       }
-      else if (userData.role === 'customer' || userData.role === 'admin') {
-        if(currentUser.email === wantedUser.email){
-          responseUtils.badRequest(response);
-        }
-        else{
-        wantedUser.role = userData.role;
-        await wantedUser.save();
-        responseUtils.sendJson(response, wantedUser);}
+  else if (userData.role === 'customer' || userData.role === 'admin') {
+            if (currentUser.role === 'customer') {
+            return responseUtils.forbidden(response);
+            }
+            else if(await currentUser._id.toString() === userId){
+              responseUtils.sendJson(response, {wantedUser, error: 'Updating own data is not allowed'}, 400)
+            }
+            else{
+            wantedUser.role = userData.role;
+            await wantedUser.save();
+            responseUtils.sendJson(response, wantedUser);}             
       }
-      else {
+  else {
         responseUtils.badRequest(response, 'Role is not valid');
-      }
+  }
+}
+else responseUtils.notFound(response);
 
 };
 
@@ -104,7 +99,7 @@ const viewUser = async(response, userId, currentUser) => {
   if (!wantedUser) {
     responseUtils.notFound(response);
   }
-  if (!currentUser) {
+  else if (!currentUser) {
     responseUtils.basicAuthChallenge(response);
   }
   else {
@@ -130,6 +125,7 @@ const registerUser = async(response, userData) => {
     const errors = [];
     if (!userData.name) errors.push('Missing name');
     if (!userData.email) errors.push('Missing email');
+    else if (!validateEmail(await userData.email.toString())) errors.push('Invalid email');
     if (!userData.password) errors.push('Missing password');
     else if (userData.password.length < 10) errors.push("Password must be at least 10 characters");
     if (userData.role && !allowedRoles.includes(userData.role)) errors.push('Unknown role');
@@ -139,13 +135,13 @@ const registerUser = async(response, userData) => {
     }
 
     else if (await User.findOne({ email: userData.email }).exec() !== null){
-      return responseUtils.badRequest(response, 'Email already in use');
+      responseUtils.badRequest(response, 'Email already in use');
     }
     else {
       const newUser = new User(userData);
       newUser.role = 'customer';
-      newUser.save();
-      return responseUtils.createdResource(response, newUser);
+      await newUser.save();
+      responseUtils.createdResource(response, newUser);
     }
 };
 
@@ -153,6 +149,10 @@ const fetchUser = async(wantedId) => {
   return await User.findById(wantedId).exec();
 }
 
-
+function validateEmail(email) 
+    {
+        var re = /\S+@\S+\.\S+/;
+        return re.test(email);
+    }
 
 module.exports = { getAllUsers, registerUser, deleteUser, viewUser, updateUser, fetchUser };
