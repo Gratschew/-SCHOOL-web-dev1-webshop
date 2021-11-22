@@ -1,9 +1,10 @@
 const responseUtils = require('./utils/responseUtils');
-const { acceptsJson, isJson, parseBodyJson, getCredentials } = require('./utils/requestUtils');
+const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
 const { getCurrentUser } = require('./auth/auth');
-const fileProducts = require('./products.json').map(product => ({...product }));
-const User = require("./models/user");
+const { getAllProducts } = require('./controllers/products');
+const { getAllUsers, viewUser, deleteUser, updateUser, registerUser, fetchUser} = require('./controllers/users')
+//const User = require("./models/user");
 /**
  * Known API routes and their allowed methods
  *
@@ -72,10 +73,11 @@ const handleRequest = async(request, response) => {
   if (matchUserId(filePath)) {
     // TODO: 8.6 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
     // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-    //throw new Error('Not Implemented');
     const splittedFilepath = filePath.split('/');
     const wantedId = splittedFilepath[splittedFilepath.length - 1];
-    const wantedUser = await User.findById(wantedId).exec();
+
+    //const wantedUser = await User.findById(wantedId).exec();
+    const wantedUser = await fetchUser(wantedId);
     const currUser = await getCurrentUser(request);
 
     if (!wantedUser) {
@@ -84,38 +86,25 @@ const handleRequest = async(request, response) => {
     if (!currUser) {
       return responseUtils.basicAuthChallenge(response);
     }
-    else {
+    else
       if (currUser.role === 'customer') {
         return responseUtils.forbidden(response);
       }
-      else if (currUser.role === 'admin') {
+      else if (currUser.role === 'admin'){
         
         if (method.toUpperCase() === 'GET') {
-          return responseUtils.sendJson(response, wantedUser);
+          await viewUser(response, wantedId, currUser);
         }
         
         else if (method.toUpperCase() === 'PUT') {
-          const requestBody = await parseBodyJson(request);
-          if (requestBody.role === '') {
-            return responseUtils.badRequest(response, 'Role is missing');
-          }
-          else if (requestBody.role === 'customer' || requestBody.role === 'admin') {
-            wantedUser.role = requestBody.role;
-            await wantedUser.save();
-            return responseUtils.sendJson(response, wantedUser);
-          }
-          else {
-            return responseUtils.badRequest(response, 'Role is not valid');
-          }
+        const requestBody = await parseBodyJson(request);
+         await updateUser(response, wantedId, currUser, requestBody);
         }
         
         else if (method.toUpperCase() === 'DELETE') { 
-          const deletedUser = wantedUser;
-          await User.deleteOne({ _id: wantedId });
-          return responseUtils.sendJson(response, deletedUser);
+          await deleteUser(response, wantedId, currUser)
         }
       }
-    }
   }
 
   // Default to 404 Not Found if unknown url
@@ -143,22 +132,9 @@ const handleRequest = async(request, response) => {
    
     
     // TODO: 8.5 Add authentication (only allowed to users with role "admin")
-    const currUser = await getCurrentUser(request);
-    if(!currUser) {
 
-      responseUtils.basicAuthChallenge(response);
-    }
-    else {
 
-      const userList = await User.find({});
-      if (currUser.role === 'customer') {
-        responseUtils.forbidden(response);
-      }
-      else {
-        responseUtils.sendJson(response, userList, 200);
-      }
-
-    } 
+    await getAllUsers(response, request);
 
   }
 
@@ -178,40 +154,11 @@ const handleRequest = async(request, response) => {
     // You can use parseBodyJson(request) method from utils/requestUtils.js to parse request body.
     // 
     const requestBody = await parseBodyJson(request);
-    const allowedRoles = ['customer', 'admin'];
-    const errors = [];
-    if (!requestBody.name) errors.push('Missing name');
-    if (!requestBody.email) errors.push('Missing email');
-    if (!requestBody.password) errors.push('Missing password');
-    else if (requestBody.password.length < 10) errors.push("Password must be at least 10 characters");
-    if (requestBody.role && !allowedRoles.includes(requestBody.role)) errors.push('Unknown role');
-    
-    if (errors.length !== 0) {
-      return responseUtils.badRequest(response, errors);
-    }
-
-    else if (await User.findOne({ email: requestBody.email }).exec() !== null){
-      return responseUtils.badRequest(response, 'Email already in use');
-    }
-    else {
-      const newUser = new User(requestBody);
-      newUser.role = 'customer';
-      newUser.save();
-      return responseUtils.createdResource(response, newUser);
-    }
-  
+    await registerUser(response, requestBody); 
   }
 
   if (filePath === '/api/products' && method.toUpperCase() === 'GET') {
-    const currUser = await getCurrentUser(request);
-    if(!currUser ) {
-      responseUtils.basicAuthChallenge(response);
-    }
-    else {
-      if (currUser.role === 'customer' || currUser.role === 'admin') {
-        return responseUtils.sendJson(response, fileProducts);
-      }
-    }
+    await getAllProducts(response, request);
   }
 };
 
