@@ -123,6 +123,7 @@ const registerUser = async(response, userData) => {
   // TODO: 10.2 Implement this
     const allowedRoles = ['customer', 'admin'];
     const errors = [];
+
     if (!userData.name) errors.push('Missing name');
     if (!userData.email) errors.push('Missing email');
     else if (!validateEmail(await userData.email.toString())) errors.push('Invalid email');
@@ -131,13 +132,15 @@ const registerUser = async(response, userData) => {
     if (userData.role && !allowedRoles.includes(userData.role)) errors.push('Unknown role');
     
     if (errors.length !== 0) {
-      return responseUtils.badRequest(response, errors);
+      responseUtils.badRequest(response, errors);
     }
 
-    else if (await User.findOne({ email: userData.email }).exec() !== null){
+    
+    else if (await User.findOne({ email: userData.email.toLowerCase() }).exec() !== null){
       responseUtils.badRequest(response, 'Email already in use');
     }
     else {
+      userData.email = userData.email.toLowerCase();
       const newUser = new User(userData);
       newUser.role = 'customer';
       await newUser.save();
