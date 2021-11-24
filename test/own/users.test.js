@@ -36,15 +36,17 @@ describe('Users Controller', () => {
 
   describe('fetchUser()', () => {
     it('should respond with "null" if user with given userId does not exist', async () => {
-        const userId = currentUser.id.split('').reverse().join('');
+        /*const userId = currentUser.id.split('').reverse().join('');
         const wantedUser = await fetchUser(userId);
-        expect(wantedUser).to.be.null;
+        expect(wantedUser).to.be.null;*/ 
+        throw 'Not yet implemented';
       });
      
     it('should respond with the user having the wanted id', async () => {
-        const userId = currentUser.id;
+        /*const userId = currentUser.id;
         const wantedUser = await fetchUser(userId);
-        expect(wantedUser.id).to.equal(userId);
+        expect(wantedUser.id).to.equal(userId);*/
+        throw 'Not yet implemented';
     });
   });
 
