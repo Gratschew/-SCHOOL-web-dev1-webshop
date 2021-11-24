@@ -158,4 +158,4 @@ function validateEmail(email)
         return re.test(email);
     }
 
-module.exports = { getAllUsers, registerUser, deleteUser, viewUser, updateUser, fetchUser };
+module.exports = { getAllUsers, registerUser, deleteUser, viewUser, updateUser, fetchUser, validateEmail};
