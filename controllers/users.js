@@ -154,8 +154,8 @@ const fetchUser = async(wantedId) => {
 
 function validateEmail(email) 
     {
-        var re = /\S+@\S+\.\S+/;
-        return re.test(email);
+      const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
     }
 
 module.exports = { getAllUsers, registerUser, deleteUser, viewUser, updateUser, fetchUser, validateEmail};

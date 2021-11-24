@@ -56,9 +56,15 @@ describe('Users Controller', () => {
     });
 
     it('should respond with "false" if the address has non-allowed characters', async () => {
-        const testEmail = 'test?^@gma!l.com';
+        const testEmail = 'test,@gma!l.com';
         const result = validateEmail(testEmail);
         expect(result).to.equal(false);
+    });
+
+    it('should respond with "false" if the address has a double @@-signs', async () => {
+      const testEmail = 'test@@gmail.com';
+      const result = validateEmail(testEmail);
+      expect(result).to.equal(false);
     });
 
     it('should respond with "true" if the address is a real address with a dot', async () => {
@@ -72,6 +78,8 @@ describe('Users Controller', () => {
         const result = validateEmail(testEmail);
         expect(result).to.equal(true);
     });
+
+
   });
   describe('registerUser()', () => {   
     it('should respond with "400 Bad Request" when lowercased email is already in use', async () => {
@@ -89,5 +97,20 @@ describe('Users Controller', () => {
         const createdUser = await User.findOne({ email: testEmail.toLowerCase() });
         expect(createdUser).to.not.be.null;
       });
+
+    it('should respond with "201 Created" when registration is successful with an uppercased email ', async () => {
+        const testEmail = 'TEST@EmAIl1.com';
+        const userData = { ...adminUser, email: testEmail };
+        await registerUser(response, userData);
+        const createdUser = await User.findOne({ email: testEmail.toLowerCase() });
+        expect(response.statusCode).to.equal(201);
+        expect(response.getHeader('content-type')).to.equal('application/json');
+        expect(response._isJSON()).to.be.true;
+        expect(response._isEndCalled()).to.be.true;
+        expect(createdUser).to.not.be.null;
+        expect(createdUser).to.not.be.undefined;
+        expect(createdUser).to.be.an('object');
+    });
+
   });
 });
