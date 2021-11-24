@@ -2,11 +2,7 @@ const chai = require('chai');
 const expect = chai.expect;
 const { createResponse } = require('node-mocks-http');
 const {
-  getAllUsers,
   registerUser,
-  deleteUser,
-  viewUser,
-  updateUser,
   fetchUser,
   validateEmail
 } = require('../../controllers/users');
@@ -34,21 +30,7 @@ describe('Users Controller', () => {
     response = createResponse();
   });
 
-  describe('fetchUser()', () => {
-    it('should respond with "null" if user with given userId does not exist', async () => {
-        /*const userId = currentUser.id.split('').reverse().join('');
-        const wantedUser = await fetchUser(userId);
-        expect(wantedUser).to.be.null;*/ 
-        throw 'Not yet implemented';
-      });
-     
-    it('should respond with the user having the wanted id', async () => {
-        /*const userId = currentUser.id;
-        const wantedUser = await fetchUser(userId);
-        expect(wantedUser.id).to.equal(userId);*/
-        throw 'Not yet implemented';
-    });
-  });
+
 
   describe('validateEmail()', () => {
     it('should respond with "false" if the address is missing an @-sign', async () => {
@@ -114,5 +96,19 @@ describe('Users Controller', () => {
         expect(createdUser).to.be.an('object');
     });
 
+  });
+
+  describe('fetchUser()', () => {
+    it('should respond with "null" if user with given userId does not exist', async () => {
+        const userId = currentUser.id.split('').reverse().join('');
+        const wantedUser = await fetchUser(userId);
+        expect(wantedUser).to.be.null;
+      });
+     
+    it('should respond with the user having the wanted id', async () => {
+        const userId = currentUser.id;
+        const wantedUser = await fetchUser(userId);
+        expect(wantedUser.id).to.equal(userId);
+    });
   });
 });
