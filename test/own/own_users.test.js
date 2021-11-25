@@ -6,7 +6,7 @@ const {
   fetchUser,
   validateEmail
 } = require('../../controllers/users');
-const { internalServerError } = require('../../utils/responseUtils');
+//const { internalServerError } = require('../../utils/responseUtils');
 
 const User = require('../../models/user');
 
@@ -15,7 +15,7 @@ const users = require('../../setup/users.json').map(user => ({ ...user }));
 const adminUser = { ...users.find(u => u.role === 'admin') };
 const customerUser = { ...users.find(u => u.role === 'customer') };
 
-describe('Users Controller', () => {
+describe('Own tests for user controller', () => {
   let currentUser;
   let customer;
   let response;
