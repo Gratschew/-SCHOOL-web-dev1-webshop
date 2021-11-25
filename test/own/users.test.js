@@ -30,41 +30,6 @@ describe('Users Controller', () => {
     response = createResponse();
   });
 
-
-
-  describe('validateEmail()', () => {
-    it('should respond with "false" if the address is missing an @-sign', async () => {
-        const testEmail = adminUser.email.replace('@', '');
-        const result = validateEmail(testEmail);
-        expect(result).to.equal(false);
-    });
-
-    it('should respond with "false" if the address has non-allowed characters', async () => {
-        const testEmail = 'test,@gma!l.com';
-        const result = validateEmail(testEmail);
-        expect(result).to.equal(false);
-    });
-
-    it('should respond with "false" if the address has a double @@-signs', async () => {
-      const testEmail = 'test@@gmail.com';
-      const result = validateEmail(testEmail);
-      expect(result).to.equal(false);
-    });
-
-    it('should respond with "true" if the address is a real address with a dot', async () => {
-        const testEmail = 'test.1@gmail.com';
-        const result = validateEmail(testEmail);
-        expect(result).to.equal(true);
-    });
-
-    it('should respond with "true" if the address is a simple address without a dot', async () => {
-        const testEmail = 'test@gmail.com';
-        const result = validateEmail(testEmail);
-        expect(result).to.equal(true);
-    });
-
-
-  });
   describe('registerUser()', () => {   
     it('should respond with "400 Bad Request" when lowercased email is already in use', async () => {
         const testEmail = adminUser.email.toUpperCase();
@@ -97,6 +62,43 @@ describe('Users Controller', () => {
     });
 
   });
+
+  describe('validateEmail()', () => {
+    it('should respond with "false" if the address is missing an @-sign', async () => {
+
+        const testEmail = adminUser.email.replace('@', '');
+        const result = validateEmail(testEmail);
+        expect(result).to.equal(false);
+
+    });
+
+    it('should respond with "false" if the address has non-allowed characters', async () => {
+        const testEmail = 'test,@gma!l.com';
+        const result = validateEmail(testEmail);
+        expect(result).to.equal(false);
+    });
+
+    it('should respond with "false" if the address has a double @@-signs', async () => {
+      const testEmail = 'test@@gmail.com';
+      const result = validateEmail(testEmail);
+      expect(result).to.equal(false);
+    });
+
+    it('should respond with "true" if the address is a real address with a dot', async () => {
+        const testEmail = 'test.1@gmail.com';
+        const result = validateEmail(testEmail);
+        expect(result).to.equal(true);
+    });
+
+    it('should respond with "true" if the address is a simple address without a dot', async () => {
+        const testEmail = 'test@gmail.com';
+        const result = validateEmail(testEmail);
+        expect(result).to.equal(true);
+    });
+
+
+  });
+
 
   describe('fetchUser()', () => {
     it('should respond with "null" if user with given userId does not exist', async () => {
