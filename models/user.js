@@ -50,6 +50,7 @@ const userSchema = new Schema({
     type: String,  
     trim: true, 
     required: [true, "can't be blank"], 
+    unique: true,
     match: SCHEMA_DEFAULTS.email.match
   },
   // for 'password'
