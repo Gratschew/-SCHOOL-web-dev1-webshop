@@ -11,9 +11,9 @@ const {
 const User = require('../../models/user');
 
 // Get users (create copies for test isolation)
-const users = require('../../setup/users.json').map(user => ({ ...user }));
-const adminUser = { ...users.find(u => u.role === 'admin') };
-const customerUser = { ...users.find(u => u.role === 'customer') };
+const own_users = require('../../setup/users.json').map(user => ({ ...user }));
+const own_adminUser = { ...own_users.find(u => u.role === 'admin') };
+const own_customerUser = { ...own_users.find(u => u.role === 'customer') };
 
 describe('Own tests for user controller', () => {
   let currentUser;
@@ -23,18 +23,18 @@ describe('Own tests for user controller', () => {
   beforeEach(async () => {
     // reset database
     await User.deleteMany({});
-    await User.create(users);
+    await User.create(own_users);
 
     // set variables
-    currentUser = await User.findOne({ email: adminUser.email }).exec();
-    customer = await User.findOne({ email: customerUser.email }).exec();
+    currentUser = await User.findOne({ email: own_adminUser.email }).exec();
+    customer = await User.findOne({ email: own_customerUser.email }).exec();
     response = createResponse();
   });
 
   describe('registerUser()', () => {   
     it('should respond with "400 Bad Request" when lowercased email is already in use', async () => {
-        const testEmail = adminUser.email.toUpperCase();
-        const userData = { ...adminUser, email: testEmail };
+        const testEmail = own_adminUser.email.toUpperCase();
+        const userData = { ...own_adminUser, email: testEmail };
         await registerUser(response, userData);
         expect(response.statusCode).to.equal(400);
         expect(response._isEndCalled()).to.be.true;
@@ -42,7 +42,7 @@ describe('Own tests for user controller', () => {
 
     it('should turn the email address to lowercase when a new user is saved', async () => {
         const testEmail = 'TEST@gmAIl.com';
-        const userData = { ...adminUser, email: testEmail };
+        const userData = { ...own_adminUser, email: testEmail };
         await registerUser(response, userData);
         const createdUser = await User.findOne({ email: testEmail.toLowerCase() });
         expect(createdUser).to.not.be.null;
@@ -50,7 +50,7 @@ describe('Own tests for user controller', () => {
 
     it('should respond with "201 Created" when registration is successful with an uppercased email ', async () => {
         const testEmail = 'TEST@EmAIl1.com';
-        const userData = { ...adminUser, email: testEmail };
+        const userData = { ...own_adminUser, email: testEmail };
         await registerUser(response, userData);
         const createdUser = await User.findOne({ email: testEmail.toLowerCase() });
         expect(response.statusCode).to.equal(201);
@@ -67,7 +67,7 @@ describe('Own tests for user controller', () => {
   describe('validateEmail()', () => {
     it('should respond with "false" if the address is missing an @-sign', async () => {
 
-        const testEmail = adminUser.email.replace('@', '');
+        const testEmail = own_adminUser.email.replace('@', '');
         const result = validateEmail(testEmail);
         expect(result).to.equal(false);
 
