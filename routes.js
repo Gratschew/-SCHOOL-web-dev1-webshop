@@ -2,7 +2,7 @@ const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
 const { getCurrentUser } = require('./auth/auth');
-const { getAllProducts } = require('./controllers/products');
+const { getAllProducts, fetchProduct, viewProduct, deleteProduct, updateProduct, registerProduct } = require('./controllers/products');
 const { getAllUsers, viewUser, deleteUser, updateUser, registerUser, fetchUser} = require('./controllers/users')
 //const User = require("./models/user");
 /**
@@ -14,7 +14,7 @@ const { getAllUsers, viewUser, deleteUser, updateUser, registerUser, fetchUser} 
 const allowedMethods = {
   '/api/register': ['POST'],
   '/api/users': ['GET'],
-  '/api/products': ['GET']
+  '/api/products': ['GET', 'POST']
 };
 
 /**
@@ -60,6 +60,10 @@ const matchUserId = url => {
   return matchIdRoute(url, 'users');
 };
 
+const matchProductId = url => {
+  return matchIdRoute(url, 'products');
+};
+
 const handleRequest = async(request, response) => {
   const { url, method, headers } = request;
   const filePath = new URL(url, `http://${headers.host}`).pathname;
@@ -70,6 +74,7 @@ const handleRequest = async(request, response) => {
     return renderPublic(fileName, response);
   }
 
+ 
   if (matchUserId(filePath)) {
     // TODO: 8.6 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
     // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
@@ -85,24 +90,65 @@ const handleRequest = async(request, response) => {
     if (!currUser) {
       return responseUtils.basicAuthChallenge(response);
     }
-    else
-        
+    else if (!acceptsJson(request)) {
+      return responseUtils.contentTypeNotAcceptable(response);
+    }
+    else{
         if (method.toUpperCase() === 'GET') {
           await viewUser(response, wantedId, currUser);
         }
         
         else if (method.toUpperCase() === 'PUT') {
         const requestBody = await parseBodyJson(request);
-         await updateUser(response, wantedId, currUser, requestBody);
-        }
+         await updateUser(response, wantedId, currUser, requestBody);}
+        
         
         else if (method.toUpperCase() === 'DELETE') { 
           await deleteUser(response, wantedId, currUser)
         }
   }
+}
+  if (matchProductId(filePath)) {
+    const splittedFilepath = filePath.split('/');
+    const wantedId = splittedFilepath[splittedFilepath.length - 1];
+    const wantedProduct = await fetchProduct(wantedId);
+    const currUser = await getCurrentUser(request);
+
+    if (!currUser) {
+      responseUtils.basicAuthChallenge(response);
+    }
+
+    else if (!wantedProduct) {
+      responseUtils.notFound(response);
+    }
+  
+    else if (!acceptsJson(request)) {
+      return responseUtils.contentTypeNotAcceptable(response);
+    }
+    else{
+        if (method.toUpperCase() === 'GET') {
+
+          await viewProduct(response, wantedId, currUser)
+        }
+        else if (method.toUpperCase() === 'PUT') {
+
+          const requestBody = await parseBodyJson(request);
+           await updateProduct(response, wantedId, currUser, requestBody);
+          }
+          
+        else if (method.toUpperCase() === 'DELETE') { 
+            await deleteProduct(response, wantedId, currUser)
+          }  
+        }   
+  }
+
+
 
   // Default to 404 Not Found if unknown url
-  if (!(filePath in allowedMethods)) return responseUtils.notFound(response);
+  if (!(filePath in allowedMethods)) {
+    return responseUtils.notFound(response)}
+ 
+
 
   // See: http://restcookbook.com/HTTP%20Methods/options/
   if (method.toUpperCase() === 'OPTIONS') return sendOptions(filePath, response);
@@ -117,6 +163,10 @@ const handleRequest = async(request, response) => {
     return responseUtils.contentTypeNotAcceptable(response);
   }
 
+  
+
+
+  
   // GET all users
   if (filePath === '/api/users' && method.toUpperCase() === 'GET') {
     // TODO 8.4 Replace the current code in this function.
@@ -167,7 +217,27 @@ const handleRequest = async(request, response) => {
     }
   }
 
-  } 
+  }
+
+  if (filePath === '/api/products' && method.toUpperCase() === 'POST') {
+    // Fail if not a JSON request, don't allow non-JSON Content-Type
+    if (!isJson(request)) {
+      return responseUtils.badRequest(response, 'Invalid Content-Type. Expected application/json');
+    }
+    const currUser = await getCurrentUser(request);
+    if(!currUser ) {
+      responseUtils.basicAuthChallenge(response);
+    }
+    else {
+      if (currUser.role === 'admin') {
+      const requestBody = await parseBodyJson(request);
+      await registerProduct(response, requestBody)
+    }
+    else responseUtils.forbidden(response);
+  }
+
+  }
+  
 };
 
 module.exports = { handleRequest };
