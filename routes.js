@@ -3,7 +3,8 @@ const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
 const { getCurrentUser } = require('./auth/auth');
 const { getAllProducts, fetchProduct, viewProduct, deleteProduct, updateProduct, registerProduct } = require('./controllers/products');
-const { getAllUsers, viewUser, deleteUser, updateUser, registerUser, fetchUser} = require('./controllers/users')
+const { getAllUsers, viewUser, deleteUser, updateUser, registerUser, fetchUser} = require('./controllers/users');
+const { getAllOrders, viewOrder, addOrder, fetchOrder} = require('./controllers/orders')
 //const User = require("./models/user");
 /**
  * Known API routes and their allowed methods
@@ -14,7 +15,8 @@ const { getAllUsers, viewUser, deleteUser, updateUser, registerUser, fetchUser} 
 const allowedMethods = {
   '/api/register': ['POST'],
   '/api/users': ['GET'],
-  '/api/products': ['GET', 'POST']
+  '/api/products': ['GET', 'POST'],
+  '/api/orders': ['GET', 'POST']
 };
 
 /**
@@ -62,6 +64,10 @@ const matchUserId = url => {
 
 const matchProductId = url => {
   return matchIdRoute(url, 'products');
+};
+
+const matchOrderId = url => {
+  return matchIdRoute(url, 'orders');
 };
 
 const handleRequest = async(request, response) => {
@@ -140,6 +146,33 @@ const handleRequest = async(request, response) => {
             await deleteProduct(response, wantedId, currUser)
           }  
         }   
+  }
+
+  if (matchOrderId(filePath)) {
+    const splittedFilepath = filePath.split('/');
+    const wantedId = splittedFilepath[splittedFilepath.length - 1];
+    const wantedOrder = await fetchOrder(wantedId);
+    const currUser = await getCurrentUser(request);
+
+    if (!currUser) {
+      responseUtils.basicAuthChallenge(response);
+    }
+
+    else if (!wantedOrder) {
+      responseUtils.notFound(response);
+    }
+  
+    else if (!acceptsJson(request)) {
+      return responseUtils.contentTypeNotAcceptable(response);
+    }
+    else{
+        if (currUser.role === 'customer' && wantedOrder.customerId.toString() !== currUser._id.toString()) {
+          responseUtils.notFound(response);
+        }
+        else {
+          await viewOrder(response, wantedId, currUser)
+        }  
+    }   
   }
 
 
@@ -236,6 +269,38 @@ const handleRequest = async(request, response) => {
     else responseUtils.forbidden(response);
   }
 
+  }
+
+  if (filePath === '/api/orders' && method.toUpperCase() === 'GET') {
+    const currUser = await getCurrentUser(request);
+    if(!currUser ) {
+      responseUtils.basicAuthChallenge(response);
+    }
+    else {
+      if (currUser.role === 'customer' || currUser.role === 'admin') {
+        await getAllOrders(response, currUser);
+      }
+    }
+  }
+
+  if (filePath === '/api/orders' && method.toUpperCase() === 'POST') {
+    // Fail if not a JSON request, don't allow non-JSON Content-Type
+    if (!isJson(request)) {
+      responseUtils.badRequest(response, 'Invalid Content-Type. Expected application/json');
+    }
+    const currUser = await getCurrentUser(request);
+    if(!currUser ) {
+      responseUtils.basicAuthChallenge(response);
+    }
+    else {
+      if (currUser.role === 'customer') {
+        const requestBody = await parseBodyJson(request);
+        await addOrder(response, requestBody, currUser);
+      }
+      else {
+        responseUtils.forbidden(response);
+      }
+    }
   }
   
 };

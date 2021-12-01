@@ -9,7 +9,8 @@ const SCHEMA_DEFAULTS = {
 
 // productSchema for orderedItemSchema (same as in product.js but image is removed.)
 const productSchema = new Schema({
-  id_: {
+  
+  _id: {
     type: String, 
     required: [true, "can't be blank"], 
   },
