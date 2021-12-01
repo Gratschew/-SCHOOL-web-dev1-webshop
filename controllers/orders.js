@@ -35,16 +35,20 @@ const viewOrder = async(response, orderId, currentUser) => {
 const addOrder = async(response, orderData, currUser) => {
     const errors = [];
     //orderData.customerId = currUser._id;
-    if (productData.items.length === 0) {
+    if (orderData.items.length === 0) {
         errors.push('Missing items');
     } 
     else {
         orderData.items.forEach(item => {
-            if (!item.product) errors.push('Missing product');
-            if (!item.quantity) errors.push('Missing quantity');
+          if (!item.product || !item.hasOwnProperty('product')) {
+              errors.push('Missing product');
+          }
+          else{
             if (!item.product._id) errors.push('Missing product _id');
             if (!item.product.name) errors.push('Missing product name');
             if (!item.product.price) errors.push('Missing product price');
+          }
+            if (!item.quantity) errors.push('Missing quantity');
         });
     }
 
@@ -53,6 +57,7 @@ const addOrder = async(response, orderData, currUser) => {
     }
     else {
       const newOrder = new Order(orderData);
+      newOrder.customerId = currUser._id;
       await newOrder.save();
       responseUtils.createdResource(response, newOrder);
     }
