@@ -117,3 +117,23 @@ button:hover {
 .background-red {
   background-color: red;
 }
+
+#div-containers {
+  display: flex;
+  width: 100%;
+  
+}
+
+#orders-container {
+  width: 30%
+}
+
+#info-container{
+  width: 70%;
+  margin-top: -5%
+}
+
+/* Solid border */
+hr {
+  border-top: 3px solid #bbb;
+}
