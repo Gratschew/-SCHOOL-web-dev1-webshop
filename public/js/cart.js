@@ -1,3 +1,5 @@
+
+
 const addToCart = productId => {
   // TODO 9.2
   // use addProductToCart(), available already from /public/js/utils.js
@@ -33,10 +35,33 @@ const placeOrder = async() => {
   // show the user a notification: /public/js/utils.js provides createNotification = (message, containerId, isSuccess = true)
   // for each of the products in the cart remove them, /public/js/utils.js provides removeElement(containerId, elementId)
   const cartProducts = getAllProductsFromCart();
+  const availableProducts = await getJSON('/api/products');
+
+  var orderJson = {};
+  orderJson['items'] = [];
+  cartProducts.forEach(cartItem => {
+    availableProducts.forEach(product => {
+      if (product._id === cartItem.name) {
+        cartItem = product;
+      }
+    });  
+    var product = {};
+    var temp = {};
+    product['_id'] = cartItem._id;
+    product['name'] = cartItem.name;
+    product['price'] = cartItem.price;
+    product['description'] = cartItem.description;
+    temp['product'] = product;
+    temp['quantity'] = getProductCountFromCart(cartItem._id);
+    orderJson.items.push(temp);
+
+  });
+
   console.log(cartProducts);
   cartProducts.forEach(cartProduct => {
     removeElement("cart-container", `item-${cartProduct.name}`);
   });
+  const result = await postOrPutJSON('/api/orders', 'POST', orderJson);
   createNotification('Successfully created an order!', 'notifications-container');
   clearCart();
 };
@@ -72,6 +97,7 @@ const placeOrder = async() => {
   const availableProducts = await getJSON('/api/products');
   const cartItems = getAllProductsFromCart();
 
+  
   cartItems.forEach(cartItem => {
     availableProducts.forEach(product => {
       if (product._id === cartItem.name) {
@@ -87,6 +113,8 @@ const placeOrder = async() => {
     templateClone.querySelector("h3").innerText = `${name}`;
     templateClone.querySelector("p.product-price").id = `price-${_id}`;
     templateClone.querySelector("p.product-price").innerText = `${price}`;
+    templateClone.querySelector("p.product-desc").id = `description-${_id}`;
+    templateClone.querySelector("p.product-desc").innerText = `${description}`;
     templateClone.querySelector("p.product-amount").id = `amount-${_id}`;
     templateClone.querySelector("p.product-amount").innerText = `${getProductCountFromCart(_id)}x`;
     

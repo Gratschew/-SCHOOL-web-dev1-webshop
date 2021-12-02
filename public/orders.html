@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="css/styles.css">
-    <title>Products</title>
+    <title>Orders</title>
   </head>
 
   <body>
@@ -22,22 +22,33 @@
       </nav>
     </header>
     <main>
-      <h1>Products</h1>
-      <div id="notifications-container"></div>
-      <div id="products-container"></div>
+      <h1>Orders</h1>
+      <div id="div-containers">
+      <div class = "testi" id="orders-container"></div>
+      <div class = "testi" id="info-container"></div>
+    </div>
     </main>
     <footer>
       <p>Copyright &copy; 2020 diipadaa etc etc.</p>
     </footer>
-    <template id="product-template">
+    <template id="order-template">
       <div class="item-row">
-        <h3 class="product-name"></h3>
-        <p class="product-description"></p>
-        <p class="product-price"></p>
-        <button>Add to cart</button>
+        <a href="#" class="order-id"></a>
+      </div>
+    </template>
+    <template id="order-info-template">
+      <div  id="order-info">
+        <H3 id=order-id> </H3>
+        <p id=customer-id> </p>
+        <p id=product-name> </p>
+        <p id=product-price> </p>
+        <p id=product-description> </p>
+        <p id=product-id> </p>
+        <p id=product-quantity> </p>
+        <hr id=divider >
       </div>
     </template>
     <script src="js/utils.js"></script>
-    <script src="js/products.js"></script>
+    <script src="js/orders.js"></script>
   </body>
 </html>
