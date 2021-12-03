@@ -46,6 +46,7 @@ const updateProduct = async event => {
   const price = form.querySelector('#price-input').value;
   const description = form.querySelector('#desc-input').value;
 
+
   try {
     const product = await postOrPutJSON(`/api/products/${id}`, 'PUT', { name, price, description });
     document.querySelector(`#name-${id}`).textContent = product.name;
@@ -126,7 +127,7 @@ const addProduct = async event => {
     const { _id } = product;
     const templateClone = productTemplate.content.cloneNode(true);
 
-    templateClone.querySelector(".item-row").id = `item-${_id}`;
+    templateClone.querySelector(".item-row-products").id = `item-${_id}`;
     templateClone.querySelector("h3").id = `name-${_id}`;
     templateClone.querySelector("h3").innerText = `${name}`;
     templateClone.querySelector("p.product-price").id = `price-${_id}`;
@@ -168,18 +169,21 @@ const addProduct = async event => {
 
   const productsContainer = document.querySelector('#products-container');
   const productTemplate = document.querySelector('#product-template');
-
+  
   let availableProducts = await getJSON('/api/products');
 
+  let currRole = await getJSON('/api/role');
   availableProducts.forEach(product => {
-    const { name, description, price, _id } = product;
+    const { name, description, price, image, _id } = product;
     const templateClone = productTemplate.content.cloneNode(true);
 
-    templateClone.querySelector(".item-row").id = `item-${_id}`;
+    templateClone.querySelector(".item-row-products").id = `item-${_id}`;
     templateClone.querySelector("h3").id = `name-${_id}`;
     templateClone.querySelector("h3").innerText = `${name}`;
+    templateClone.querySelector("img").id = `image-${_id}`;
+    templateClone.querySelector("img").src = `${image}€`;
     templateClone.querySelector("p.product-price").id = `price-${_id}`;
-    templateClone.querySelector("p.product-price").innerText = `${price}`;
+    templateClone.querySelector("p.product-price").innerText = `${price}€`;
     templateClone.querySelector("p.product-description").id = `desc-${_id}`;
     templateClone.querySelector("p.product-description").innerText = `${description}`;
     templateClone.querySelector(".cart-button").id = `add-to-cart-${_id}`;
@@ -193,7 +197,9 @@ const addProduct = async event => {
 
     productsContainer.append(templateClone);
   });
-
+  if(currRole === 'admin'){
+  const editButton = document.querySelector("#edit-button");
+  editButton.style.display = 'block';
   document.querySelector("#add-product-button").addEventListener('click', () => {
     if (document.querySelector("#add-product-button").innerText === "Add Product") {
       showAddForm();
@@ -204,7 +210,8 @@ const addProduct = async event => {
       document.querySelector("#add-product-button").innerText = "Add Product";
     }
   });
-
+  
+  
   document.querySelector("#edit-button").addEventListener("click", async () => {
     availableProducts = await getJSON('/api/products');
     if (document.querySelector("#edit-button").innerText === "Edit Products") {
@@ -229,6 +236,6 @@ const addProduct = async event => {
       document.querySelector("#add-product-button").hidden = true;
     }
     
-  });
+  });}
 
 })();

@@ -100,10 +100,10 @@ label {
 button {
   background-color: #4caf50;
   color: white;
-  padding: 1.5rem 2rem;
+  padding: 1rem 1.5rem;
   border: none;
   cursor: pointer;
-  font-size: 1.1em;
+  font-size: 0.8em;
 }
 
 button:hover {
@@ -136,4 +136,19 @@ button:hover {
 /* Solid border */
 hr {
   border-top: 3px solid #bbb;
+}
+#edit-button{
+ display: none; 
+}
+
+img{
+  border-radius: 8px;
+  width: 7em;
+  height: 6em;
+}
+
+#products-container{
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
 }

@@ -4,7 +4,8 @@ const { renderPublic } = require('./utils/render');
 const { getCurrentUser } = require('./auth/auth');
 const { getAllProducts, fetchProduct, viewProduct, deleteProduct, updateProduct, registerProduct } = require('./controllers/products');
 const { getAllUsers, viewUser, deleteUser, updateUser, registerUser, fetchUser} = require('./controllers/users');
-const { getAllOrders, viewOrder, addOrder, fetchOrder} = require('./controllers/orders')
+const { getAllOrders, viewOrder, addOrder, fetchOrder} = require('./controllers/orders');
+
 //const User = require("./models/user");
 /**
  * Known API routes and their allowed methods
@@ -16,7 +17,8 @@ const allowedMethods = {
   '/api/register': ['POST'],
   '/api/users': ['GET'],
   '/api/products': ['GET', 'POST'],
-  '/api/orders': ['GET', 'POST']
+  '/api/orders': ['GET', 'POST'],
+  '/api/role' : ['GET']
 };
 
 /**
@@ -73,14 +75,13 @@ const matchOrderId = url => {
 const handleRequest = async(request, response) => {
   const { url, method, headers } = request;
   const filePath = new URL(url, `http://${headers.host}`).pathname;
-
   // serve static files from public/ and return immediately
   if (method.toUpperCase() === 'GET' && !filePath.startsWith('/api')) {
     const fileName = filePath === '/' || filePath === '' ? 'index.html' : filePath;
     return renderPublic(fileName, response);
   }
 
- 
+
   if (matchUserId(filePath)) {
     // TODO: 8.6 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
     // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
@@ -198,7 +199,6 @@ const handleRequest = async(request, response) => {
 
   
 
-
   
   // GET all users
   if (filePath === '/api/users' && method.toUpperCase() === 'GET') {
@@ -302,6 +302,18 @@ const handleRequest = async(request, response) => {
       }
     }
   }
+
+  if (filePath === '/api/role' && method.toUpperCase() === 'GET'){
+    const currUser = await getCurrentUser(request);
+    if(!currUser) {
+      responseUtils.basicAuthChallenge(response);
+    }
+    else {
+      responseUtils.sendJson(response, currUser.role, 200);
+    }
+  }
+
+
   
 };
 
