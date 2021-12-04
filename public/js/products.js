@@ -177,7 +177,7 @@ const addProduct = async event => {
     const { _id } = product;
     const templateClone = productTemplate.content.cloneNode(true);
 
-    templateClone.querySelector(".item-row-products").id = `item-${_id}`;
+    templateClone.querySelector(".item-row").id = `item-${_id}`;
     templateClone.querySelector("h3").id = `name-${_id}`;
     templateClone.querySelector("h3").innerText = `${name}`;
     templateClone.querySelector("img").id = `image-${_id}`;
@@ -229,7 +229,7 @@ const addProduct = async event => {
     const { name, description, price, image, _id } = product;
     const templateClone = productTemplate.content.cloneNode(true);
 
-    templateClone.querySelector(".item-row-products").id = `item-${_id}`;
+    templateClone.querySelector(".item-row").id = `item-${_id}`;
     templateClone.querySelector("h3").id = `name-${_id}`;
     templateClone.querySelector("h3").innerText = `${name}`;
     templateClone.querySelector("img.product-image").id = `image-${_id}`;
