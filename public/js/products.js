@@ -1,20 +1,33 @@
 const infoContainer = document.querySelector('#product-info-container');
 const infoTemplate = document.querySelector('#product-info-template');
 
+/**
+ * Adds product to card
+ * 
+ * @param {string} productId product's ID
+ * @param {string} productName product's Name
+ */
 const addToCart = (productId, productName) => {
-  // TODO 9.2
-  // use addProductToCart(), available already from /public/js/utils.js
-  // /public/js/utils.js also includes createNotification() function
   addProductToCart(productId);
   createNotification(`Added ${productName} to cart!`, 'notifications-container');
 };
 
+/**
+ * Shows less information about a product
+ * 
+ * @param {string} _id product's ID
+ */
 const showLess = (_id) => {
   document.querySelector(`#details-${_id}`).hidden = false;
   removeElement("product-info-container",`d-item-${_id}`);
 };
 
 
+/**
+ * Shows more inforatmion about a product
+ * 
+ * @param {string} _id product's ID 
+ */
 const showMore = (_id) => {
   if (infoContainer.className !== "") {
     showLess(infoContainer.className);
@@ -37,6 +50,12 @@ const showMore = (_id) => {
   infoContainer.append(templateClone);
 };
 
+/**
+ * updates product's information and sends it to database through API
+ * 
+ * @param {event} event listens to event
+ * @returns notificiation if update was successful or not
+ */
 const updateProduct = async event => {
   event.preventDefault();
 
@@ -64,6 +83,12 @@ const updateProduct = async event => {
   }
 };
 
+/**
+ * Deletes a product and sends it to database through API
+ * 
+ * @param {string} productId product's ID
+ * @returns notification if product's deletion was success or not
+ */
 const deleteProduct = async (productId) => {
   removeElement('modify-product', 'edit-product-form');
 
@@ -79,6 +104,10 @@ const deleteProduct = async (productId) => {
   }
 };
 
+/**
+ * shows form for adding a new product
+ * 
+ */
 const showAddForm = () => {
   removeElement('add-product', 'add-form');
 
@@ -95,6 +124,15 @@ const showAddForm = () => {
   addContainer.querySelector('form.add-form').addEventListener('submit', addProduct);
 };
 
+/**
+ * Shows edit form for a specific products and prefills the fields with product's current information
+ * 
+ * @param {string} id product's ID
+ * @param {string} name product's name
+ * @param {string} price product's price
+ * @param {string} image product's image
+ * @param {string} desc product's description
+ */
 const showEditForm = (id, name, price, image, desc) => {
   removeElement('add-product', 'add-form');
   document.querySelector(".modify-button").hidden = true;
@@ -113,6 +151,13 @@ const showEditForm = (id, name, price, image, desc) => {
   modifyContainer.querySelector('form').addEventListener('submit', updateProduct);
 };
 
+
+/**
+ * Adds a new product and sends it to database through API
+ * 
+ * @param {event} event listens to an event
+ * @returns notification if adding the product was success or not
+ */
 const addProduct = async event => {
   event.preventDefault();
 

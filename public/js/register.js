@@ -10,7 +10,11 @@
 
 const constErrorMsg = 'Registeration unsuccessful';
 
-
+/**
+ * User form for registering as a new user
+ * 
+ * @param {event} event listens to event
+ */
 const userForm = (event) => {
     if(correctPassword()){
         var userInfo = {};
@@ -29,26 +33,33 @@ const userForm = (event) => {
     }
     event.preventDefault();
 }
-
-// returns true if the passwords match between the input fields
+/**
+ * returns true if the passwords match between the input fields
+ * 
+ */
 const correctPassword = () => {
 return document.getElementById('password').value === document.getElementById('passwordConfirmation').value;
 }
 
+/**
+ * Successful registeration notification
+ */
 const registerationSuccess = () => {
     createNotification('Registeration successful', 'notifications-container', true);
     document.getElementById("register-form").reset();
 }
 
 const registerationFailure = (errorMessage) => {
-msg = errorMessage.message;
-msgLength = errorMessage.message.length
-if(msgLength > 1){
-createNotification(constErrorMsg + ' ' + msg, 'notifications-container', false)
-}
-else{
-createNotification(constErrorMsg, 'notifications-container', false)
-}
+    msg = errorMessage.message;
+    msgLength = errorMessage.message.length
+
+    if(msgLength > 1){
+    createNotification(constErrorMsg + ' ' + msg, 'notifications-container', false)
+    }
+    
+    else{
+    createNotification(constErrorMsg, 'notifications-container', false)
+    }
 }
 
 const submitForm = document.getElementById("register-form");

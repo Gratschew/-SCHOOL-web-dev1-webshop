@@ -34,7 +34,7 @@ const getJSON = async url => {
  *
  * @param {string} url resource url on the server
  * @param {string} method "PUT" or "POST"
- * @param {Object|Array} data payload data to be sent to the server as JSON
+ * @param {object|Array} data payload data to be sent to the server as JSON
  * @returns {Promise<*>} promise that resolves to the parsed JSON
  */
 const postOrPutJSON = async(url, method, data = {}) => {
@@ -102,7 +102,7 @@ const deleteResource = async url => {
  * or other HTML elements (remember that IDs must be unique within
  * a document).
  *
- * @returns {string}
+ * @returns {string} some random string to work as ID
  */
 const generateId = () => {
   // Shamelessly borrowed from a Gist. See:
@@ -121,7 +121,7 @@ const generateId = () => {
  * Appends a new paragraph inside the container element and gives it
  * class based on the status of the message (success or failure).
  *
- * @param {string} message
+ * @param {string} message message for notification
  * @param {string} containerId id attribute of the container element
  * @param {boolean} isSuccess whether the message describes a success or a failure
  */
@@ -159,6 +159,12 @@ const removeElement = (containerId, elementId) => {
   container.querySelectorAll(`#${elementId}`).forEach(element => element.remove());
 };
 
+/**
+ * adds product to cart and returns current amount of that product in the cart
+ * 
+ * @param {string} productId product's ID
+ * @returns product count from cart
+ */
 const addProductToCart = productId => {
   const productCount = getProductCountFromCart(productId);
   !productCount
@@ -168,6 +174,13 @@ const addProductToCart = productId => {
   return getProductCountFromCart(productId);
 };
 
+
+/**
+ * Decreases product count from cart
+ * 
+ * @param {string} productId product's ID
+ * @returns new amount of product in cart or zero if product count is zero.
+ */
 const decreaseProductCount = productId => {
   const productCount = getProductCountFromCart(productId);
   if (productCount > 1) {
@@ -180,10 +193,21 @@ const decreaseProductCount = productId => {
   }
 };
 
+/**
+ * Gets product from cart with a given productID
+ * 
+ * @param {string} productId product's ID
+ * @returns product object 
+ */
 const getProductCountFromCart = productId => {
   return sessionStorage.getItem(productId);
 };
 
+/**
+ * all current products from cart
+ * 
+ * @returns all current products from cart
+ */
 const getAllProductsFromCart = () => {
   return Object.keys(sessionStorage).reduce((array, str) => {
     const item = {
@@ -194,6 +218,10 @@ const getAllProductsFromCart = () => {
   }, []);
 };
 
+/**
+ * Clears session storage
+ * 
+ */
 const clearCart = () => {
   sessionStorage.clear();
 };

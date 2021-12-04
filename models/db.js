@@ -24,6 +24,9 @@ const getDbUrl = () => {
   };
 };
 
+/**
+ * Connects database
+ */
 const connectDB = () => {
   // Do nothing if already connected
   if (!mongoose.connection || mongoose.connection.readyState === 0) {
@@ -46,11 +49,19 @@ const connectDB = () => {
   }
 };
 
+/**
+ * Will catch error if database connection fails from connectDB
+ * 
+ * @param {any} err error for connection error
+ */
 const handleCriticalError = (err) => {
   console.error(err);
   throw err;
 };
 
+/**
+ * Disconnects database
+ */
 const disconnectDB = () => {
   mongoose.disconnect();
 };

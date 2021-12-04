@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// 
+// schema defaults
 const SCHEMA_DEFAULTS = {
+
+  // price
   price: {
       minValue: 0
   }
@@ -10,23 +12,25 @@ const SCHEMA_DEFAULTS = {
 
 // productSchema
 const productSchema = new Schema({
-  // for 'name'
+  // name
   name: {
     type: String,  
     required: [true, "can't be blank"], 
   },
 
-  // for 'price'
+  // price
   price: {
     type: Number,  
     required: [true, "can't be blank"],
     min: SCHEMA_DEFAULTS.minValue
   },
 
+  // image
   image: {
     type: String
   },
 
+  // description
   description: {
     type: String
   }

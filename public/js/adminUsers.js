@@ -39,6 +39,12 @@
   const userTemplate = document.querySelector('#user-template');
   const formTemplate = document.querySelector('#form-template');
 
+  /**
+   * Updates user's role
+   * 
+   * @param {event} event listens to event
+   * @returns notification if update was successful or not
+   */
   const updateUser = async event => {
     event.preventDefault();
 
@@ -57,6 +63,12 @@
     }
   };
 
+  /**
+   * Deletes user
+   * 
+   * @param {string} userId user's ID
+   * @returns notification if deletion was successful or not
+   */
   const deleteUser = async userId => {
     removeElement('modify-user', 'edit-user-form');
 
@@ -70,6 +82,15 @@
     }
   };
 
+  /**
+   * Shows edit form with specific information from the about to be edited 
+   * user's text contents from parameters filled in
+   * 
+   * @param {string} id user's id
+   * @param {string} name user's name
+   * @param {string} email user's email
+   * @param {string} role user's role
+   */
   const showEditForm = (id, name, email, role) => {
     removeElement('modify-user', 'edit-user-form');
 

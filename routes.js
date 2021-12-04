@@ -25,7 +25,7 @@ const allowedMethods = {
  * Send response to client options request.
  *
  * @param {string} filePath pathname of the request URL
- * @param {http.ServerResponse} response
+ * @param {http.ServerResponse} response server's response
  */
 const sendOptions = (filePath, response) => {
   if (filePath in allowedMethods) {
@@ -45,8 +45,8 @@ const sendOptions = (filePath, response) => {
  * Does the url have an ID component as its last part? (e.g. /api/users/dsf7844e)
  *
  * @param {string} url filePath
- * @param {string} prefix
- * @returns {boolean}
+ * @param {string} prefix prefix
+ * @returns {boolean} true if ID component as last part, false otherwise
  */
 const matchIdRoute = (url, prefix) => {
   const idPattern = '[0-9a-z]{8,24}';
@@ -58,20 +58,39 @@ const matchIdRoute = (url, prefix) => {
  * Does the URL match /api/users/{id}
  *
  * @param {string} url filePath
- * @returns {boolean}
+ * @returns {boolean} true if matches, false otherwise
  */
 const matchUserId = url => {
   return matchIdRoute(url, 'users');
 };
 
+/**
+ * Does the URL match /api/products/{id}
+ * 
+ * @param {string} url filePath
+ * @returns {boolean} true if matches, false otherwise
+ */
 const matchProductId = url => {
   return matchIdRoute(url, 'products');
 };
 
+/**
+ * Does the URL match /api/orders/{id}
+ * 
+ * @param {string} url filePath
+ * @returns {boolean} true if matches, false otherwise
+ */
 const matchOrderId = url => {
   return matchIdRoute(url, 'orders');
 };
 
+/**
+ * Handles the requests and responds to them 
+ * 
+ * @param {http.ServerRequest} request client's request
+ * @param {http.ServerResponse} response server's response
+ * @returns exit function after response has ended
+ */
 const handleRequest = async(request, response) => {
   const { url, method, headers } = request;
   const filePath = new URL(url, `http://${headers.host}`).pathname;
@@ -82,8 +101,8 @@ const handleRequest = async(request, response) => {
   }
 
 
+
   if (matchUserId(filePath)) {
-    // TODO: 8.6 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
     // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
     const splittedFilepath = filePath.split('/');
     const wantedId = splittedFilepath[splittedFilepath.length - 1];
@@ -92,13 +111,13 @@ const handleRequest = async(request, response) => {
     const currUser = await getCurrentUser(request);
 
     if (!wantedUser) {
-      return responseUtils.notFound(response);
+      responseUtils.notFound(response);
     }
-    if (!currUser) {
-      return responseUtils.basicAuthChallenge(response);
+    else if (!currUser) {
+      responseUtils.basicAuthChallenge(response);
     }
     else if (!acceptsJson(request)) {
-      return responseUtils.contentTypeNotAcceptable(response);
+      responseUtils.contentTypeNotAcceptable(response);
     }
     else{
         if (method.toUpperCase() === 'GET') {
@@ -113,8 +132,9 @@ const handleRequest = async(request, response) => {
         else if (method.toUpperCase() === 'DELETE') { 
           await deleteUser(response, wantedId, currUser)
         }
+    }
   }
-}
+
   if (matchProductId(filePath)) {
     const splittedFilepath = filePath.split('/');
     const wantedId = splittedFilepath[splittedFilepath.length - 1];
@@ -130,7 +150,7 @@ const handleRequest = async(request, response) => {
     }
   
     else if (!acceptsJson(request)) {
-      return responseUtils.contentTypeNotAcceptable(response);
+      responseUtils.contentTypeNotAcceptable(response);
     }
     else{
         if (method.toUpperCase() === 'GET') {
@@ -164,7 +184,7 @@ const handleRequest = async(request, response) => {
     }
   
     else if (!acceptsJson(request)) {
-      return responseUtils.contentTypeNotAcceptable(response);
+      responseUtils.contentTypeNotAcceptable(response);
     }
     else{
         if (currUser.role === 'customer' && wantedOrder.customerId.toString() !== currUser._id.toString()) {
@@ -180,7 +200,8 @@ const handleRequest = async(request, response) => {
 
   // Default to 404 Not Found if unknown url
   if (!(filePath in allowedMethods)) {
-    return responseUtils.notFound(response)}
+    return responseUtils.notFound(response)
+  }
  
 
 
@@ -198,18 +219,8 @@ const handleRequest = async(request, response) => {
   }
 
   
-
-  
   // GET all users
   if (filePath === '/api/users' && method.toUpperCase() === 'GET') {
-    // TODO 8.4 Replace the current code in this function.
-    // First call getAllUsers() function to fetch the list of users.
-    // Then you can use the sendJson(response, payload, code = 200) from 
-    // ./utils/responseUtils.js to send the response in JSON format.
-   
-    
-    // TODO: 8.5 Add authentication (only allowed to users with role "admin")
-
     const currUser = await getCurrentUser(request);
     if(!currUser) {
       responseUtils.basicAuthChallenge(response);
@@ -229,46 +240,45 @@ const handleRequest = async(request, response) => {
   if (filePath === '/api/register' && method.toUpperCase() === 'POST') {
     // Fail if not a JSON request, don't allow non-JSON Content-Type
     if (!isJson(request)) {
-      return responseUtils.badRequest(response, 'Invalid Content-Type. Expected application/json');
+      responseUtils.badRequest(response, 'Invalid Content-Type. Expected application/json');
     }
-
-    // TODO: 8.4 Implement registration
+    else{
     // You can use parseBodyJson(request) method from utils/requestUtils.js to parse request body.
-
     const requestBody = await parseBodyJson(request);
     await registerUser(response, requestBody); 
+    }
   }
 
   if (filePath === '/api/products' && method.toUpperCase() === 'GET') {
-    const currUser = await getCurrentUser(request);
-  if(!currUser ) {
-    responseUtils.basicAuthChallenge(response);
-  }
-  else {
-    if (currUser.role === 'customer' || currUser.role === 'admin') {
-      await getAllProducts(response);
-    }
-  }
-
-  }
-
-  if (filePath === '/api/products' && method.toUpperCase() === 'POST') {
-    // Fail if not a JSON request, don't allow non-JSON Content-Type
-    if (!isJson(request)) {
-      return responseUtils.badRequest(response, 'Invalid Content-Type. Expected application/json');
-    }
     const currUser = await getCurrentUser(request);
     if(!currUser ) {
       responseUtils.basicAuthChallenge(response);
     }
     else {
-      if (currUser.role === 'admin') {
-      const requestBody = await parseBodyJson(request);
-      await registerProduct(response, requestBody)
+      if (currUser.role === 'customer' || currUser.role === 'admin') {
+        await getAllProducts(response);
+      }
     }
-    else responseUtils.forbidden(response);
   }
 
+  if (filePath === '/api/products' && method.toUpperCase() === 'POST') {
+    // Fail if not a JSON request, don't allow non-JSON Content-Type
+    if (!isJson(request)) {
+      responseUtils.badRequest(response, 'Invalid Content-Type. Expected application/json');
+    }
+    else{
+      const currUser = await getCurrentUser(request);
+      if(!currUser ) {
+        responseUtils.basicAuthChallenge(response);
+      }
+      else {
+        if (currUser.role === 'admin') {
+        const requestBody = await parseBodyJson(request);
+        await registerProduct(response, requestBody)
+        }
+        else responseUtils.forbidden(response);
+      }
+    } 
   }
 
   if (filePath === '/api/orders' && method.toUpperCase() === 'GET') {
@@ -314,7 +324,6 @@ const handleRequest = async(request, response) => {
   }
 
 
-  
 };
 
 module.exports = { handleRequest };

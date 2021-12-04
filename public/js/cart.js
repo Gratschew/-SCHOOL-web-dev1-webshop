@@ -1,16 +1,20 @@
+/**
+ * Adds product to card
+ * 
+ * @param {string} productId product's ID
+ */
 const addToCart = productId => {
-  // TODO 9.2
-  // use addProductToCart(), available already from /public/js/utils.js
-  // call updateProductAmount(productId) from this file
   addProductToCart(productId);
   updateProductAmount(productId);
   
 };
 
+/**
+ * Decreases amount of a specific product in cart. Removes the product if product amount is zero.
+ * 
+ * @param {string} productId product's ID
+ */
 const decreaseCount = productId => {
-  // TODO 9.2
-  // Decrease the amount of products in the cart, /public/js/utils.js provides decreaseProductCount()
-  // Remove product from cart if amount is 0,  /public/js/utils.js provides removeElement = (containerId, elementId
   if (decreaseProductCount(productId) === 0) {
     console.log(getProductCountFromCart(productId));
     removeElement("cart-container", `item-${productId}`);
@@ -20,6 +24,11 @@ const decreaseCount = productId => {
   }
 };
 
+/**
+ * Update's product amount
+ * 
+ * @param {string} productId product's ID
+ */
 const updateProductAmount = productId => {
   // TODO 9.2
   // - read the amount of products in the cart, /public/js/utils.js provides getProductCountFromCart(productId)
@@ -27,6 +36,11 @@ const updateProductAmount = productId => {
   document.querySelector(`#amount-${productId}`).innerText = `${getProductCountFromCart(productId)}x`;
 };
 
+/**
+ * Places order and sends order data to database
+ * 
+ * @returns notification if placing the order was successful or not
+ */
 const placeOrder = async() => {
   // TODO 9.2
   // Get all products from the cart, /public/js/utils.js provides getAllProductsFromCart()
