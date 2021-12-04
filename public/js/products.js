@@ -50,7 +50,7 @@ const updateProduct = async event => {
   try {
     const product = await postOrPutJSON(`/api/products/${id}`, 'PUT', { name, price, description });
     document.querySelector(`#name-${id}`).textContent = product.name;
-    document.querySelector(`#price-${id}`).textContent = product.price;
+    document.querySelector(`#price-${id}`).textContent = `${product.price}€`;
     document.querySelector(`#desc-${id}`).textContent = product.description;
     removeElement('modify-product', 'edit-product-form');
     document.querySelector(".modify-button").hidden = false;
@@ -131,7 +131,7 @@ const addProduct = async event => {
     templateClone.querySelector("h3").id = `name-${_id}`;
     templateClone.querySelector("h3").innerText = `${name}`;
     templateClone.querySelector("p.product-price").id = `price-${_id}`;
-    templateClone.querySelector("p.product-price").innerText = `${price}`;
+    templateClone.querySelector("p.product-price").innerText = `${price}€`;
     templateClone.querySelector("p.product-description").id = `desc-${_id}`;
     templateClone.querySelector("p.product-description").innerText = `${description}`;
     templateClone.querySelector(".cart-button").id = `add-to-cart-${_id}`;
