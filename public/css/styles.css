@@ -153,3 +153,22 @@ img{
   justify-content: space-around;
 }
 
+.product-description{
+  font-size: 10px;
+  max-width: 160px;
+  flex-grow: 1;
+}
+
+.item-row{
+  display:flex;
+  flex-direction: column;
+  justify-content: space-around;
+
+}
+.cart-button {
+max-width: 100px;
+margin-bottom: 10px;
+}
+.details-button {
+  max-width: 100px;
+  }

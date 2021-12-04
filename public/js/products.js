@@ -28,7 +28,7 @@ const showLess = (_id) => {
  * 
  * @param {string} _id product's ID 
  */
-const showMore = (_id, description) => {
+const showMore = (_id) => {
   if (infoContainer.className !== "") {
     showLess(infoContainer.className);
   }
@@ -42,7 +42,7 @@ const showMore = (_id, description) => {
   templateClone.querySelector("h3").id = `d-name-${_id}`;
   templateClone.querySelector("h3").innerText =  `Name of the product: ${document.querySelector(`#name-${_id}`).innerText}`;
   templateClone.querySelector("p.product-description").id = `d-description-${_id}`;
-  templateClone.querySelector("p.product-description").innerText = `Description: ${description}`;
+  templateClone.querySelector("p.product-description").innerText = `Description: ${document.querySelector(`#description-${_id}`).innerText}`;
   templateClone.querySelector("p.product-price").id = `d-price-${_id}`;
   templateClone.querySelector("p.product-price").innerText = `Price: ${document.querySelector(`#price-${_id}`).innerText}`;
   templateClone.querySelector(".close-button").addEventListener('click', () => showLess(_id));
@@ -198,7 +198,7 @@ const addProduct = async event => {
     templateClone.querySelector(".cart-button").id = `add-to-cart-${_id}`;
     templateClone.querySelector(".cart-button").addEventListener('click', () => addToCart(_id, name));
     templateClone.querySelector(".details-button").id = `details-${_id}`;
-    templateClone.querySelector(".details-button").addEventListener('click', () => showMore(_id, description));
+    templateClone.querySelector(".details-button").addEventListener('click', () => showMore(_id));
     templateClone.querySelector(".modify-button").id = `modify-${_id}`;
     templateClone.querySelector(".modify-button").addEventListener('click', () => showEditForm(_id, name, price, image, description));
     templateClone.querySelector(".modify-button").hidden = false;
@@ -236,8 +236,6 @@ const addProduct = async event => {
   let currRole = await getJSON('/api/role');
   availableProducts.forEach(product => {
     const { name, description, price, image, _id } = product;
-    var partialDesc = description.slice(0,9);
-    partialDesc = partialDesc.concat('...');
     const templateClone = productTemplate.content.cloneNode(true);
     templateClone.querySelector(".item-row").id = `item-${_id}`;
     templateClone.querySelector("h3").id = `name-${_id}`;
@@ -248,11 +246,11 @@ const addProduct = async event => {
     templateClone.querySelector("p.product-price").innerText = `${price}€`;
     templateClone.querySelector("p.product-description").id = `description-${_id}`;
 
-    templateClone.querySelector("p.product-description").innerText = `${partialDesc}`;
+    templateClone.querySelector("p.product-description").innerText = `${description}`;
     templateClone.querySelector(".cart-button").id = `add-to-cart-${_id}`;
     templateClone.querySelector(".cart-button").addEventListener('click', () => addToCart(_id, name));
     templateClone.querySelector(".details-button").id = `details-${_id}`;
-    templateClone.querySelector(".details-button").addEventListener('click', () => showMore(_id, description));
+    templateClone.querySelector(".details-button").addEventListener('click', () => showMore(_id));
     templateClone.querySelector(".modify-button").id = `modify-${_id}`;
     templateClone.querySelector(".modify-button").addEventListener('click', () => showEditForm(_id, name, price, image, description));
     templateClone.querySelector(".delete-button").id = `delete-${_id}`;
