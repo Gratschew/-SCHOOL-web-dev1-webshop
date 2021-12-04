@@ -37,7 +37,7 @@
     <template id="product-template">
       <div class="item-row-products">
         <h3 class="product-name"></h3>
-        <img src="http://placeimg.com/640/480/nature" alt="placeholder-x">
+        <img class="product-image" src="http://placeimg.com/640/480/nature" alt="No Image Available">
         <p class="product-price"></p>
         <p class="product-description" hidden></p>
         <button class="cart-button">Add to cart</button>
@@ -89,6 +89,16 @@
             required>
         </div>
         <div class="form-group">
+          <label for="image">Image</label>
+          <input
+            type="text"
+            name="image"
+            class="form-control"
+            id="image-input"
+            placeholder=""
+            required>
+        </div>
+        <div class="form-group">
           <label for="desc">Description</label>
           <input
             name="Desc"
@@ -130,14 +140,23 @@
             required>
         </div>
         <div class="form-group">
+          <label for="image">Image</label>
+          <input
+            type="text"
+            name="image"
+            class="form-control"
+            id="image"
+            placeholder=""
+            required>
+        </div>
+        <div class="form-group">
           <label for="desc">Description</label>
           <input
             type="text"
             name="desc"
             class="form-control"
             id="desc"
-            placeholder=""
-            required>
+            placeholder="">
         </div>
         <div class="form-group">
           <div class="second-column">

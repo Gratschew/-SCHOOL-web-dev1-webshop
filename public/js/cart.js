@@ -1,5 +1,3 @@
-
-
 const addToCart = productId => {
   // TODO 9.2
   // use addProductToCart(), available already from /public/js/utils.js
@@ -57,13 +55,17 @@ const placeOrder = async() => {
 
   });
 
-  console.log(cartProducts);
+  console.log(JSON.stringify(orderJson));
+  try {
+  const result = await postOrPutJSON('/api/orders', 'POST', orderJson);
   cartProducts.forEach(cartProduct => {
     removeElement("cart-container", `item-${cartProduct.name}`);
   });
-  const result = await postOrPutJSON('/api/orders', 'POST', orderJson);
-  createNotification('Successfully created an order!', 'notifications-container');
   clearCart();
+  return createNotification('Successfully created an order!', 'notifications-container');
+} catch(error){
+  return createNotification('Order failed! (Admin users may not create orders)', 'notifications-container', false);
+}
 };
 
 (async() => {

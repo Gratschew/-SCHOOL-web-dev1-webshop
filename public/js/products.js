@@ -43,13 +43,16 @@ const updateProduct = async event => {
   const form = event.target;
   const id = form.querySelector('#id-input').value;
   const name = form.querySelector('#name-input').value;
+  const image = form.querySelector('#image-input').value;
   const price = form.querySelector('#price-input').value;
   const description = form.querySelector('#desc-input').value;
+  const updProduct = {'name' : name, 'price' : price, 'image': image, 'description' : description};
 
 
   try {
-    const product = await postOrPutJSON(`/api/products/${id}`, 'PUT', { name, price, description });
+    const product = await postOrPutJSON(`/api/products/${id}`, 'PUT', updProduct);
     document.querySelector(`#name-${id}`).textContent = product.name;
+    document.querySelector(`#image-${id}`).src = product.image;
     document.querySelector(`#price-${id}`).textContent = `${product.price}€`;
     document.querySelector(`#desc-${id}`).textContent = product.description;
     removeElement('modify-product', 'edit-product-form');
@@ -92,7 +95,7 @@ const showAddForm = () => {
   addContainer.querySelector('form.add-form').addEventListener('submit', addProduct);
 };
 
-const showEditForm = (id, name, price, desc) => {
+const showEditForm = (id, name, price, image, desc) => {
   removeElement('add-product', 'add-form');
   document.querySelector(".modify-button").hidden = true;
   
@@ -103,6 +106,7 @@ const showEditForm = (id, name, price, desc) => {
   form.querySelector('#id-input').value = id;
   form.querySelector('#name-input').value = name;
   form.querySelector('#price-input').value = price;
+  form.querySelector('#image-input').value = image;
   form.querySelector('#desc-input').value = desc;
 
   modifyContainer.append(form);
@@ -115,11 +119,12 @@ const addProduct = async event => {
   const form = event.target;
   //const id = form.querySelector('#id-input').value;
   const name = form.querySelector('#name').value;
+  const image = form.querySelector('#image').value;
   const price = form.querySelector('#price').value;
   const description = form.querySelector('#desc').value;
 
   try {
-    const product = await postOrPutJSON(`/api/products`, 'POST', { name, price, description });
+    const product = await postOrPutJSON(`/api/products`, 'POST', { name, price, image, description });
     
     const productsContainer = document.querySelector('#products-container');
     const productTemplate = document.querySelector('#product-template');
@@ -130,6 +135,8 @@ const addProduct = async event => {
     templateClone.querySelector(".item-row-products").id = `item-${_id}`;
     templateClone.querySelector("h3").id = `name-${_id}`;
     templateClone.querySelector("h3").innerText = `${name}`;
+    templateClone.querySelector("img").id = `image-${_id}`;
+    templateClone.querySelector("img").src = `${image}`;
     templateClone.querySelector("p.product-price").id = `price-${_id}`;
     templateClone.querySelector("p.product-price").innerText = `${price}€`;
     templateClone.querySelector("p.product-description").id = `desc-${_id}`;
@@ -139,7 +146,7 @@ const addProduct = async event => {
     templateClone.querySelector(".details-button").id = `details-${_id}`;
     templateClone.querySelector(".details-button").addEventListener('click', () => showMore(_id));
     templateClone.querySelector(".modify-button").id = `modify-${_id}`;
-    templateClone.querySelector(".modify-button").addEventListener('click', () => showEditForm(_id, name, price, description));
+    templateClone.querySelector(".modify-button").addEventListener('click', () => showEditForm(_id, name, price, image, description));
     templateClone.querySelector(".modify-button").hidden = false;
     templateClone.querySelector(".delete-button").id = `delete-${_id}`;
     templateClone.querySelector(".delete-button").addEventListener('click', () => deleteProduct(_id));
@@ -180,8 +187,8 @@ const addProduct = async event => {
     templateClone.querySelector(".item-row-products").id = `item-${_id}`;
     templateClone.querySelector("h3").id = `name-${_id}`;
     templateClone.querySelector("h3").innerText = `${name}`;
-    templateClone.querySelector("img").id = `image-${_id}`;
-    templateClone.querySelector("img").src = `${image}€`;
+    templateClone.querySelector("img.product-image").id = `image-${_id}`;
+    templateClone.querySelector("img.product-image").src = `${image}`;
     templateClone.querySelector("p.product-price").id = `price-${_id}`;
     templateClone.querySelector("p.product-price").innerText = `${price}€`;
     templateClone.querySelector("p.product-description").id = `desc-${_id}`;
@@ -191,7 +198,7 @@ const addProduct = async event => {
     templateClone.querySelector(".details-button").id = `details-${_id}`;
     templateClone.querySelector(".details-button").addEventListener('click', () => showMore(_id));
     templateClone.querySelector(".modify-button").id = `modify-${_id}`;
-    templateClone.querySelector(".modify-button").addEventListener('click', () => showEditForm(_id, name, price, description));
+    templateClone.querySelector(".modify-button").addEventListener('click', () => showEditForm(_id, name, price, image, description));
     templateClone.querySelector(".delete-button").id = `delete-${_id}`;
     templateClone.querySelector(".delete-button").addEventListener('click', () => deleteProduct(_id));
 
