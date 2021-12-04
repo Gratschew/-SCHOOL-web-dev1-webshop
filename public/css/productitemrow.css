@@ -1,0 +1,8 @@
+
+.item-row{
+  display:flex;
+  flex-direction: column;
+  justify-content: space-around;
+  flex-flow: column wrap;
+}
+

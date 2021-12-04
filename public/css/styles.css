@@ -143,8 +143,8 @@ hr {
 
 img{
   border-radius: 8px;
-  width: 7em;
-  height: 6em;
+  width: 16em;
+  height: 14em;
 }
 
 #products-container{
@@ -159,16 +159,21 @@ img{
   flex-grow: 1;
 }
 
-.item-row{
-  display:flex;
-  flex-direction: column;
-  justify-content: space-around;
-
-}
 .cart-button {
 max-width: 100px;
 margin-bottom: 10px;
+display: inline-block;
+
 }
 .details-button {
   max-width: 100px;
+  margin-bottom: 10px;
+  display: inline-block;
   }
+.modify-button {
+  max-width: 100px;
+  margin-bottom: 10px;
+  }
+.delete-button {
+  max-width: 100px;
+  }  
