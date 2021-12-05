@@ -56,7 +56,7 @@ const addOrder = async(response, orderData, currUser) => {
     } 
     else {
         orderData.items.forEach(item => {
-          if (!item.product || !item.hasOwnProperty('product')) {
+          if (!item.product || !Object.prototype.hasOwnProperty.call(item, 'product')) {
               errors.push('Missing product');
           }
           else{
@@ -87,6 +87,6 @@ const addOrder = async(response, orderData, currUser) => {
  */
 const fetchOrder = async(wantedId) => {
   return await Order.findById(wantedId).exec();
-}
+};
 
 module.exports = { getAllOrders, viewOrder, addOrder, fetchOrder };

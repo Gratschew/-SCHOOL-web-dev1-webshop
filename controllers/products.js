@@ -56,17 +56,17 @@ const updateProduct = async(response, productId, currentUser, productData) => {
       else if (currentUser.role === 'customer') {
       responseUtils.forbidden(response);
       }
-      else{
-        if(productData.hasOwnProperty('name')){
+      else{ 
+        if(Object.prototype.hasOwnProperty.call(productData, 'name')){
           wantedProduct.name = productData.name;
         }
-        if(productData.hasOwnProperty('price')){
+        if(Object.prototype.hasOwnProperty.call(productData, 'price')){
           wantedProduct.price = productData.price;
         }
-        if(productData.hasOwnProperty('description')){
+        if(Object.prototype.hasOwnProperty.call(productData, 'description')){
           wantedProduct.description = productData.description;
         }
-        if(productData.hasOwnProperty('image')){
+        if(Object.prototype.hasOwnProperty.call(productData, 'image')){
           wantedProduct.image = productData.image;
         }
         
@@ -134,6 +134,6 @@ const registerProduct = async(response, productData) => {
  */
 const fetchProduct = async(wantedId) => {
   return await Product.findById(wantedId).exec();
-}
+};
 
 module.exports = { getAllProducts, fetchProduct, viewProduct, deleteProduct, updateProduct, registerProduct };

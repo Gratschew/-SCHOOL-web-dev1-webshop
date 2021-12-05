@@ -130,7 +130,7 @@ const handleRequest = async(request, response) => {
         
         
         else if (method.toUpperCase() === 'DELETE') { 
-          await deleteUser(response, wantedId, currUser)
+          await deleteUser(response, wantedId, currUser);
         }
     }
   }
@@ -155,7 +155,7 @@ const handleRequest = async(request, response) => {
     else{
         if (method.toUpperCase() === 'GET') {
 
-          await viewProduct(response, wantedId, currUser)
+          await viewProduct(response, wantedId, currUser);
         }
         else if (method.toUpperCase() === 'PUT') {
 
@@ -164,7 +164,7 @@ const handleRequest = async(request, response) => {
           }
           
         else if (method.toUpperCase() === 'DELETE') { 
-            await deleteProduct(response, wantedId, currUser)
+            await deleteProduct(response, wantedId, currUser);
           }  
         }   
   }
@@ -191,7 +191,7 @@ const handleRequest = async(request, response) => {
           responseUtils.notFound(response);
         }
         else {
-          await viewOrder(response, wantedId, currUser)
+          await viewOrder(response, wantedId, currUser);
         }  
     }   
   }
@@ -200,7 +200,7 @@ const handleRequest = async(request, response) => {
 
   // Default to 404 Not Found if unknown url
   if (!(filePath in allowedMethods)) {
-    return responseUtils.notFound(response)
+    return responseUtils.notFound(response);
   }
  
 
@@ -274,7 +274,7 @@ const handleRequest = async(request, response) => {
       else {
         if (currUser.role === 'admin') {
         const requestBody = await parseBodyJson(request);
-        await registerProduct(response, requestBody)
+        await registerProduct(response, requestBody);
         }
         else responseUtils.forbidden(response);
       }
