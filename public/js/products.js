@@ -73,9 +73,7 @@ const updateProduct = async event => {
     document.querySelector(`#name-${id}`).textContent = product.name;
     document.querySelector(`#image-${id}`).src = product.image;
     document.querySelector(`#price-${id}`).textContent = `${product.price}€`;
-    var partialDesc = product.description.slice(0,9);
-    partialDesc = partialDesc.concat('...');
-    document.querySelector(`#description-${id}`).textContent = partialDesc;
+    document.querySelector(`#description-${id}`).textContent = product.description;
     
     // TODO: change values to modify form's input fields after update
     /*document.querySelector('#name-input').value = product.name;
