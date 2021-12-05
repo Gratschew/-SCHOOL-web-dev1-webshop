@@ -4,8 +4,8 @@ require('dotenv').config();
 //for some reason the commented dburl failed tests in plussa but worked locally
 //so dburl is now hard coded into the program
 //const dburl = process.env.DBURL;
-//const dburl_const = 'mongodb://localhost:27017/WebShopDb'
-const dburl_const = "mongodb+srv://max:cat22@cluster1.xpgmo.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const dburl_const = 'mongodb://localhost:27017/WebShopDb'
+//const dburl_const = "mongodb+srv://max:cat22@cluster1.xpgmo.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
 /**
  * Get database connect URL.
