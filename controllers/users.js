@@ -34,7 +34,7 @@ const deleteUser = async(response, userId, currentUser) => {
     }
     else if (currentUser.role === 'admin') {
       if(await currentUser._id.toString() === userId){
-        responseUtils.sendJson(response, {wantedUser, error: 'Deleting own data is not allowed'}, 400)
+        responseUtils.sendJson(response, {wantedUser, error: 'Deleting own data is not allowed'}, 400);
       }
       else{
       const deletedUser = wantedUser;
@@ -62,7 +62,7 @@ const updateUser = async(response, userId, currentUser, userData) => {
             return responseUtils.forbidden(response);
             }
             else if(await currentUser._id.toString() === userId){
-              responseUtils.sendJson(response, {wantedUser, error: 'Updating own data is not allowed'}, 400)
+              responseUtils.sendJson(response, {wantedUser, error: 'Updating own data is not allowed'}, 400);
             }
             else{
             wantedUser.role = userData.role;
@@ -146,7 +146,7 @@ const registerUser = async(response, userData) => {
  */
 const fetchUser = async(wantedId) => {
   return await User.findById(wantedId).exec();
-}
+};
 
 /**
  * Validates email adress by comparing it to characters and terms when it comes to email adresses
@@ -156,7 +156,10 @@ const fetchUser = async(wantedId) => {
  */
 function validateEmail(email) 
     {
-      const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+      // this was the original regex string which didn't pass ESlint's no-useless-escape
+      //const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/; 
       return re.test(email);
     }
 
