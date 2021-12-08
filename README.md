@@ -1,16 +1,16 @@
 # Group 16
 
-Member1:  Max Gratschew, max.gratschew@tuni.fi, 283272, 
-resposible for: TODO, short description of duties 
+Member1:  Max Gratschew, max.gratschew@tuni.fi, H283272, 
+resposible for: Models, Backend (Api methods for products) frontend (orders and product layout (css and image handling)), CI pipeline, app deployment
 
 Member2:  Simo Selinummi, simo.selinummi@tuni.fi, H283237, 
-resposible for: TODO, short description of duties 
+resposible for: Backend (API methods and request handling in general), frontend (products and cart), tests, accessibility
 
 
 
 # WebDev1 coursework assignment
 
-A web shop with vanilla HTML, CSS.
+A web shop with vanilla HTML, CSS. 
 
 
 ### The project structure
@@ -32,7 +32,7 @@ A web shop with vanilla HTML, CSS.
 │   ├── product.js          --> model for a product
 │   └── user.js             --> model for a user
 ├── public                  --> UI handling
-│   ├── img                 --> 
+│   ├── img                 --> TODO
 │   ├── js                  --> connects the UI to the server
 │   └── css                 --> styles the UI
 ├── utils                   --> TODO
