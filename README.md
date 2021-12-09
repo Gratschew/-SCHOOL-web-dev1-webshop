@@ -142,6 +142,8 @@ You are also free to add more security threats + protection here, if you will.
 - Directory traversal
 - Database hacking, **protection**: Passwords are stored after hashing and salting (bcrypt)
 
+We used regex to validate email adresses. Poorly designed regex patterns are known to bring alot of vulnerabilities in modern web applications. They can lead to failed input validation, leaky firewalls, and even denial of service attacks. 
+
 ## Navigation
 
 ![Navigation diagram](docs/navigation.jpg)
