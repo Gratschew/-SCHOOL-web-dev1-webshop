@@ -101,8 +101,7 @@ Threats:
 
 ## Navigation
 
-![Navigation diagram](https://course-gitlab.tuni.fi/webdev1-autumn-2021/webdev1-group16/-/blob/main/docs/navigation.jpg)
-![testi](docs/navigation.jpg)
+![Navigation diagram](docs/navigation.jpg)
 
 
 
